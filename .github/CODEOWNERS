@@ -1,0 +1,4 @@
+# Automatically generated CODEOWNERS
+# Regenerate with `make update-codeowners`
+draft-orru-zkproof-fiat-shamir.md m@orru.net
+draft-orru-zkproof-sigma.md m@orru.net
