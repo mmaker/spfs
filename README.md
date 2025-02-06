@@ -1,4 +1,4 @@
-# ZKPROOF Drafts
+# zkproof Σ-protocols draft
 
 This is the working area for individual Internet-Drafts.
 
