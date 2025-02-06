@@ -1246,7 +1246,7 @@ struct Witness {
 }
 </pre><a href="#section-1.1.1-8" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1.1-9">For those familiar with the matrix notation, <code>SchnorrCS</code> is encoding a sparse linear equation of the form <code>A * scalars = B</code>, where <code>A</code> is a matrix of <code>num_statements</code> rows, <code>scalars.len</code> columns, of group elements. Each element is identified by a pair <code>(usize, usize)</code> denoting the column index, and the value (an index referring to <code>generators</code>).
+<p id="section-1.1.1-9">For those familiar with the matrix notation, <code>SigmaConstraintSystem</code> is encoding a sparse linear equation of the form <code>A * scalars = B</code>, where <code>A</code> is a matrix of <code>num_statements</code> rows, <code>scalars.len</code> columns, of group elements. Each element is identified by a pair <code>(usize, usize)</code> denoting the column index, and the value (an index referring to <code>generators</code>).
 The vector <code>B</code> is a list of indices referring to <code>generators</code>.<a href="#section-1.1.1-9" class="pilcrow">¶</a></p>
 <p id="section-1.1.1-10">This is equivalently done with a constraint system:<a href="#section-1.1.1-10" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1.1.1-11">

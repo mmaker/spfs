@@ -124,9 +124,9 @@ struct Equation {
        scalars: [Scalar; num_scalars] // The set of secret scalars
    }
 
-   For those familiar with the matrix notation, SchnorrCS is encoding a
-   sparse linear equation of the form A * scalars = B, where A is a
-   matrix of num_statements rows, scalars.len columns, of group
+   For those familiar with the matrix notation, SigmaConstraintSystem is
+   encoding a sparse linear equation of the form A * scalars = B, where
+   A is a matrix of num_statements rows, scalars.len columns, of group
    elements.  Each element is identified by a pair (usize, usize)
    denoting the column index, and the value (an index referring to
    generators).  The vector B is a list of indices referring to
