@@ -9,11 +9,11 @@
 <meta content="
        This document describes Sigma protocols, a secure, general-purpose non-interactive zero-knowledge proof of knowledge. Concretely, the scheme allows proving knowledge of a witness, without revealing any information about the undisclosed messages or the signature itself, while at the same time, guarantying soundness of the overall protocols. 
     " name="description">
-<meta content="xml2rfc 3.25.0" name="generator">
+<meta content="xml2rfc 3.26.0" name="generator">
 <meta content="zero-knowledge" name="keyword">
 <meta content="draft-orru-zkproof-sigma-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.25.0
+  xml2rfc 3.26.0
     Python 3.12.8
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -1044,11 +1044,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Sigma Protocols</td>
-<td class="right">January 2025</td>
+<td class="right">February 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Orrù</td>
-<td class="center">Expires 4 August 2025</td>
+<td class="center">Expires 10 August 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1061,12 +1061,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-orru-zkproof-sigma-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-01-31" class="published">31 January 2025</time>
+<time datetime="2025-02-06" class="published">6 February 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-08-04">4 August 2025</time></dd>
+<dd class="expires"><time datetime="2025-08-10">10 August 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1111,7 +1111,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 10 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1141,18 +1141,34 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-protocols" class="internal xref">Σ-protocols</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
-                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-constraint-representation" class="internal xref">Constraint representation</a></p>
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-protocols-over-prime-order-" class="internal xref">Σ-protocols over prime-order groups</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1.2.1">
+                    <p id="section-toc.1-1.1.2.1.2.1.1" class="keepWithNext"><a href="#section-1.1.1" class="auto internal xref">1.1.1</a>.  <a href="#name-constraint-representation" class="internal xref">Constraint representation</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
-                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-nonce-and-challenge-derivat" class="internal xref">Nonce and challenge derivation</a></p>
+                <p id="section-toc.1-1.1.2.2.1"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-core-protocol" class="internal xref">Core protocol</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2.2.1">
-                    <p id="section-toc.1-1.1.2.2.2.1.1" class="keepWithNext"><a href="#section-1.2.1" class="auto internal xref">1.2.1</a>.  <a href="#name-statement-generation" class="internal xref">Statement generation</a></p>
+                    <p id="section-toc.1-1.1.2.2.2.1.1" class="keepWithNext"><a href="#section-1.2.1" class="auto internal xref">1.2.1</a>.  <a href="#name-prover" class="internal xref">Prover</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2.2.2">
+                    <p id="section-toc.1-1.1.2.2.2.2.1"><a href="#section-1.2.2" class="auto internal xref">1.2.2</a>.  <a href="#name-verifier" class="internal xref">Verifier</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
-                <p id="section-toc.1-1.1.2.3.1"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-proof-generation" class="internal xref">Proof generation</a></p>
+                <p id="section-toc.1-1.1.2.3.1"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-nonce-and-challenge-derivat" class="internal xref">Nonce and challenge derivation</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3.2.1">
+                    <p id="section-toc.1-1.1.2.3.2.1.1"><a href="#section-1.3.1" class="auto internal xref">1.3.1</a>.  <a href="#name-statement-generation" class="internal xref">Statement generation</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.4">
+                <p id="section-toc.1-1.1.2.4.1"><a href="#section-1.4" class="auto internal xref">1.4</a>.  <a href="#name-proof-generation" class="internal xref">Proof generation</a></p>
 </li>
             </ul>
 </li>
@@ -1171,13 +1187,19 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-protocols">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-protocols" class="section-name selfRef">Σ-protocols</a>
       </h2>
-<div id="constraint-representation">
+<div id="protocols-over-prime-order-groups">
 <section id="section-1.1">
-        <h3 id="name-constraint-representation">
-<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-constraint-representation" class="section-name selfRef">Constraint representation</a>
+        <h3 id="name-protocols-over-prime-order-">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-protocols-over-prime-order-" class="section-name selfRef">Σ-protocols over prime-order groups</a>
         </h3>
-<p id="section-1.1-1">Traditionally, proof system are defined in Camenish-Stadtler notation as (for example):<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.1-2">
+<p id="section-1.1-1">The following sub-section present concrete instantiations of Σ-protocols over prime-order groups such as ellitpic curves.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<div id="constraint-representation">
+<section id="section-1.1.1">
+          <h4 id="name-constraint-representation">
+<a href="#section-1.1.1" class="section-number selfRef">1.1.1. </a><a href="#name-constraint-representation" class="section-name selfRef">Constraint representation</a>
+          </h4>
+<p id="section-1.1.1-1">Traditionally, Σ-protocols are defined in Camenish-Stadtler notation as (for example):<a href="#section-1.1.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1.1-2">
 <pre>
 VRF = {
   (x),            // Secret variables
@@ -1185,163 +1207,258 @@ VRF = {
   A = x * B,      // Statements to prove
   G = x * H
 }
-</pre><a href="#section-1.1-2" class="pilcrow">¶</a>
+</pre><a href="#section-1.1.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1-3">A Schnorr constraint is represented as:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.1-4">
+<p id="section-1.1.1-3">Internally, they can be represented as:<a href="#section-1.1.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1.1-4">
 <pre>
-struct ConstraintSystem {
+struct SigmaConstraintSystem {
     // A label associated to the proof
     label: String
-    // the list of equations to be proven
-    equations: [Equations; num_equations]
+    // the list of statements to be proven
+    statements: [Equation; num_statements]
 
     // the number of secret scalars
-    num_terms: usize
+    num_scalars: usize
     // the number of equations to be proven
-    num_equations: usize
+    num_statements: usize
     // the group elements to be used in the proof
-    points: Vec&lt;Point&gt;
+    group_elts: Vec&lt;Group&gt;
 }
-</pre><a href="#section-1.1-4" class="pilcrow">¶</a>
+</pre><a href="#section-1.1.1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1-5">// call them statements
-where <code>Equation</code> is the following type:<a href="#section-1.1-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.1-6">
+<p id="section-1.1.1-5">where <code>Equation</code> is the following type:<a href="#section-1.1.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1.1-6">
 <pre>
 struct Equation {
     // An index in the list of generators representing the left-hand side part of the equation
     lhs: usize
-    // A list of (ScalarIndex, PointIndex) referring to a scalar and a generator
+    // A list of (ScalarIndex, GroupEltIndex) referring to a scalar and a generator
     rhs: Vec&lt;(usize, usize)&gt;
 }
-</pre><a href="#section-1.1-6" class="pilcrow">¶</a>
+</pre><a href="#section-1.1.1-6" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1-7">A witness is defined as:<a href="#section-1.1-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.1-8">
+<p id="section-1.1.1-7">A witness is defined as:<a href="#section-1.1.1-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1.1-8">
 <pre>
 struct Witness {
-    scalars: [Scalar; num_terms] // The set of secret scalars
+    scalars: [Scalar; num_scalars] // The set of secret scalars
 }
-</pre><a href="#section-1.1-8" class="pilcrow">¶</a>
+</pre><a href="#section-1.1.1-8" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1-9">For those familiar with the matrix notation, <code>SchnorrCS</code> is encoding a sparse linear equation of the form <code>A * scalars = B</code>, where <code>A</code> is a matrix of <code>num_equations</code> rows, <code>scalars.len</code> columns, of group elements. Each element is identified by a pair <code>(usize, usize)</code> denoting the column index, and the value (an index referring to <code>generators</code>).
-The vector <code>B</code> is a list of indices referring to <code>generators</code>.<a href="#section-1.1-9" class="pilcrow">¶</a></p>
-<p id="section-1.1-10">This is equivalently done with a constraint system:<a href="#section-1.1-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.1-11">
+<p id="section-1.1.1-9">For those familiar with the matrix notation, <code>SchnorrCS</code> is encoding a sparse linear equation of the form <code>A * scalars = B</code>, where <code>A</code> is a matrix of <code>num_statements</code> rows, <code>scalars.len</code> columns, of group elements. Each element is identified by a pair <code>(usize, usize)</code> denoting the column index, and the value (an index referring to <code>generators</code>).
+The vector <code>B</code> is a list of indices referring to <code>generators</code>.<a href="#section-1.1.1-9" class="pilcrow">¶</a></p>
+<p id="section-1.1.1-10">This is equivalently done with a constraint system:<a href="#section-1.1.1-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1.1-11">
 <pre>
 cs = ConstraintSystem.new("VRF")
 [x] = cs.allocate_scalars(1)
-[A, B, G, H] = cs.allocate_points(4)
+[A, B, G, H] = cs.allocate_group_elt(4)
 cs.append_equation(lhs=A, rhs=[(x, B)])
 cs.append_equation(lhs=G, rhs=[(x, H)])
-</pre><a href="#section-1.1-11" class="pilcrow">¶</a>
+</pre><a href="#section-1.1.1-11" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1-12">In the above, <code>ConstraintSystem.new()</code> creates a new <code>ConstraintSystem</code> with label <code>"VRF"</code>.<a href="#section-1.1-12" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.1-13">
+<p id="section-1.1.1-12">In the above, <code>ConstraintSystem.new()</code> creates a new <code>ConstraintSystem</code> with label <code>"VRF"</code>.<a href="#section-1.1.1-12" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1.1-13">
 <pre>
 class ConstraintSystem:
     def new(label):
         return ConstraintSystem {
             label,
-            num_equations: 0,
-            num_terms: 0,
-            points: [],
+            num_statements: 0,
+            num_scalars: 0,
+            group_elts: [],
+            statements: [],
         }
 
     def allocate_scalars(self, n: usize):
-        indices = range(self.num_terms, self.num_terms + n)
-        self.num_terms += n
+        indices = range(self.num_scalars, self.num_scalars + n)
+        self.num_scalars += n
         return indices
 
-    def allocate_points(self, n: usize):
-        indices = range(len(self.points), len(self.points)
-        self.points.extend([None; self.indices])
+    def allocate_group_elt(self, n: usize):
+        indices = range(len(self.group_elts), len(self.group_elts)
+        self.group_elts.extend([None; self.indices])
         return indices
 
-    def assign_point(self, ptr: usize, value: Point):
-        self.points[ptr] = value
+    def assign_point(self, ptr: usize, value: Group):
+        self.group_elts[ptr] = value
 
-    def append_constraint(self, lhs, rhs):
+    def append_equation(self, lhs, rhs):
         equation = Equation {lhs, rhs}
-        self.num_equations += 1
-        self.equations.append(equation)
-</pre><a href="#section-1.1-13" class="pilcrow">¶</a>
+        self.num_statements += 1
+        self.statements.append(equation)
+</pre><a href="#section-1.1.1-13" class="pilcrow">¶</a>
+</div>
+<p id="section-1.1.1-14">A witness can be mapped to a group element via:<a href="#section-1.1.1-14" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1.1-15">
+<pre>
+class Witness:
+    def map(cs):
+        assert cs.num_scalars = self.scalars.len()
+        image = [0; Group]
+        for i in range(cs.num_statements):
+            eq_scalars = [self.scalars[idx_pair[0]] for idx_pair in cs.equations[i].rhs]
+            eq_group_elt = [cs.group_elts[idx_pair[1]] for idx_pair in cs.equations[i].rhs]
+            image[i] = multi_scalar_multiplication(eq_scalars, eq_group_elt)
+        return image
+</pre><a href="#section-1.1.1-15" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="core-protocol">
+<section id="section-1.2">
+        <h3 id="name-core-protocol">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-core-protocol" class="section-name selfRef">Core protocol</a>
+        </h3>
+<div class="alignLeft art-text artwork" id="section-1.2-1">
+<pre>
+class SchnorrProof:
+    def new(cs: ConstraintSystem):
+        self.iv = generate_statement_iv(statement)
+        self.cs = cs
+
+    def prover_commit(self, witness: Witness):
+        nonces = SHO.init(iv).random_seed().divide().absorb_scalars(witness).squeeze_scalars(self.cs.num_scalars)
+        prover_state = (witness, nonces)
+        commitment = self.cs.map(witness)
+        return (prover_state, commitment)
+
+    def prover_response(self, prover_state, challenge):
+        response = [0; self.cs.num_scalars]
+        for i in range(self.cs.num_scalars):
+            response[i] = witness[i] + challenge * nonces[i]
+        return response
+
+    def challenge(self, commitment):
+        SHO.init(iv).absorb_group_elt(commitment).squeeze_scalar(1)
+
+    def verify(self, commitment, challenge, response):
+        image = [equation.lhs for equation in self.cs.statements.equations]
+        commitment = challenge * image + self.cs.map(response)
+</pre><a href="#section-1.2-1" class="pilcrow">¶</a>
+</div>
+<div id="prover">
+<section id="section-1.2.1">
+          <h4 id="name-prover">
+<a href="#section-1.2.1" class="section-number selfRef">1.2.1. </a><a href="#name-prover" class="section-name selfRef">Prover</a>
+          </h4>
+<p id="section-1.2.1-1">We describe below the prover's wrapping function.<a href="#section-1.2.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.2.1-2">
+<pre>
+def prove_short(statement, witness):
+    sp = SchnorrProof.new(statement)
+    (prover_state, commitment) = sp.prover_commmit(witness)
+    challenge = sp.challenge(commitment)
+    response = sp.prover_response(commitment, challenge)
+    return scalar_to_bytes(challenge) + scalar_to_bytes(response)
+
+def prove_batchable(statement, witness):
+    sp = SchnorrProof.new(statement)
+    (prover_state, commitment) = sp.prover_commmit(witness)
+    challenge = sp.challenge(commitment)
+    response = sp.prover_response(commitment, challange)
+    return point_to_bytes(commitment) + scalar_to_bytes(response)
+</pre><a href="#section-1.2.1-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="verifier">
+<section id="section-1.2.2">
+          <h4 id="name-verifier">
+<a href="#section-1.2.2" class="section-number selfRef">1.2.2. </a><a href="#name-verifier" class="section-name selfRef">Verifier</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-1.2.2-1">
+<pre>
+def verify_batchable(statement, proof):
+    sp = SchnorrProof.new(statement)
+    commitment = read_group_elements(proof)
+</pre><a href="#section-1.2.2-1" class="pilcrow">¶</a>
+</div>
+</section>
 </div>
 </section>
 </div>
 <div id="nonce-and-challenge-derivation">
-<section id="section-1.2">
+<section id="section-1.3">
         <h3 id="name-nonce-and-challenge-derivat">
-<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-nonce-and-challenge-derivat" class="section-name selfRef">Nonce and challenge derivation</a>
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-nonce-and-challenge-derivat" class="section-name selfRef">Nonce and challenge derivation</a>
         </h3>
-<p id="section-1.2-1">Two types of randomness are needed for a sigma protocol:
-1. A nonce seeding the randomness used to produce the commitment of the first round of the protocol
-2. A challenge representing the verifier's public random coin.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
-<p id="section-1.2-2">The challenge of a Schnorr proof is derived with<a href="#section-1.2-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.2-3">
+<p id="section-1.3-1">Two types of randomness are needed for a sigma protocol:<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-1.3-2">
+<li id="section-1.3-2.1">
+            <p id="section-1.3-2.1.1">A nonce seeding the randomness used to produce the commitment of the first round of the protocol<a href="#section-1.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.3-2.2">
+            <p id="section-1.3-2.2.1">A challenge representing the verifier's public random coin.<a href="#section-1.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-1.3-3">The challenge of a Schnorr proof is derived with<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.3-4">
 <pre>
-challenge = sho.init(iv).absorb_points(commitment).squeeze_scalar(1)
-</pre><a href="#section-1.2-3" class="pilcrow">¶</a>
+challenge = sho.init(iv).absorb_group_elt(commitment).squeeze_scalar(1)
+</pre><a href="#section-1.3-4" class="pilcrow">¶</a>
 </div>
-<p id="section-1.2-4">This can be generated with:<a href="#section-1.2-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.2-5">
+<p id="section-1.3-5">This can be generated with:<a href="#section-1.3-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.3-6">
 <pre>
 nonce = sho.init(iv)
            .absorb_bytes(random)
            .ratchet()
            .absorb_scalars(witness)
-           .squeeze_scalars(cs.num_terms)
-</pre><a href="#section-1.2-5" class="pilcrow">¶</a>
+           .squeeze_scalars(cs.num_scalars)
+</pre><a href="#section-1.3-6" class="pilcrow">¶</a>
 </div>
-<p id="section-1.2-6">The <code>iv</code>, which must properly separate the application and the statement being proved, is described below.<a href="#section-1.2-6" class="pilcrow">¶</a></p>
+<p id="section-1.3-7">The <code>iv</code>, which must properly separate the application and the statement being proved, is described below.<a href="#section-1.3-7" class="pilcrow">¶</a></p>
 <div id="statement-generation">
-<section id="section-1.2.1">
+<section id="section-1.3.1">
           <h4 id="name-statement-generation">
-<a href="#section-1.2.1" class="section-number selfRef">1.2.1. </a><a href="#name-statement-generation" class="section-name selfRef">Statement generation</a>
+<a href="#section-1.3.1" class="section-number selfRef">1.3.1. </a><a href="#name-statement-generation" class="section-name selfRef">Statement generation</a>
           </h4>
-<p id="section-1.2.1-1">Let <code>H</code> be a hasher object. The statement is encoded in a stateful hash object as follows.<a href="#section-1.2.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.2.1-2">
+<p id="section-1.3.1-1">Let <code>H</code> be a hash object. The statement is encoded in a stateful hash object as follows.<a href="#section-1.3.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.3.1-2">
 <pre>
 hasher = H.new(domain_separator)
-hasher.update_usize([cs.num_equations, cs.num_terms])
+hasher.update_usize([cs.num_statements, cs.num_scalars])
 for equation in cs.equations:
   hasher.update_usize([equation.lhs, equation.rhs[0], equation.rhs[1]])
-hasher.absorb_points(generators)
+hasher.update(generators)
 iv = hasher.digest()
-</pre><a href="#section-1.2.1-2" class="pilcrow">¶</a>
+</pre><a href="#section-1.3.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-1.2.1-3">In simpler terms, without stateful hash objects, this should correspond to the following:<a href="#section-1.2.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.2.1-4">
+<p id="section-1.3.1-3">In simpler terms, without stateful hash objects, this should correspond to the following:<a href="#section-1.3.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.3.1-4">
 <pre>
 bin_challenge = SHAKE128(iv).update(commitment).digest(scalar_bytes)
 challenge = int(bin_challenge) % p
-</pre><a href="#section-1.2.1-4" class="pilcrow">¶</a>
+</pre><a href="#section-1.3.1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-1.2.1-5">and the nonce is produced as:<a href="#section-1.2.1-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.2.1-6">
+<p id="section-1.3.1-5">and the nonce is produced as:<a href="#section-1.3.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.3.1-6">
 <pre>
 bin_nonce = SHAKE128(iv)
             .update(random)
             .update(pad)
             .update(cs.scalars)
-            .digest(cs.num_terms * scalar_bytes)
+            .digest(cs.num_scalars * scalar_bytes)
 nonces = [int(bin_nonce[i*scalar_bytes: i*(scalar_bytes+1)]) % p
-          for i in range(cs.num_terms-1)]
-</pre><a href="#section-1.2.1-6" class="pilcrow">¶</a>
+          for i in range(cs.num_scalars-1)]
+</pre><a href="#section-1.3.1-6" class="pilcrow">¶</a>
 </div>
-<p id="section-1.2.1-7">Where:
+<p id="section-1.3.1-7">Where:
     - <code>pad</code> is a (padding) zero string of length <code>168 - len(random)</code>.
     - <code>scalar_bytes</code> is the number of bytes required to produce a uniformly random group element
-    - <code>random</code> is a random seed obtained from the operating system memory<a href="#section-1.2.1-7" class="pilcrow">¶</a></p>
+    - <code>random</code> is a random seed obtained from the operating system memory<a href="#section-1.3.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="proof-generation">
-<section id="section-1.3">
+<section id="section-1.4">
         <h3 id="name-proof-generation">
-<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-proof-generation" class="section-name selfRef">Proof generation</a>
+<a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-proof-generation" class="section-name selfRef">Proof generation</a>
       </h3>
 </section>
 </div>
