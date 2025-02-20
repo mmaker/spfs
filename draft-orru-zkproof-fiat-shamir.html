@@ -6,16 +6,16 @@
 <meta content="initial-scale=1.0" name="viewport">
 <title>Fiat-Shamir Heuristic</title>
 <meta content="Michele Orrù" name="author">
-<meta content="
-       This document describes the Fiat-Shamir transform. 
-    " name="description">
-<meta content="xml2rfc 3.26.0" name="generator">
+<meta content='
+       This document describes the Fiat-Shamir transform via a stateful hash object that is capable of supporting a number of different hash functions, to "absorb" elements from different domains, and produce pseudoranom elements "squeezing" from the hash object. 
+    ' name="description">
+<meta content="xml2rfc 3.27.0" name="generator">
 <meta content="zero knowledge" name="keyword">
 <meta content="hash" name="keyword">
 <meta content="draft-orru-zkproof-fiat-shamir-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.26.0
-    Python 3.12.8
+  xml2rfc 3.27.0
+    Python 3.12.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
@@ -436,7 +436,7 @@ dl {
     margin-bottom: 0;
   }
 }
-dl > dt {
+dl:not(.dlNewline) > dt {
   float: left;
   margin-right: 2ch;
   min-width: 8ch;
@@ -1049,7 +1049,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Orrù</td>
-<td class="center">Expires 10 August 2025</td>
+<td class="center">Expires 24 August 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1062,12 +1062,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-orru-zkproof-fiat-shamir-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-02-06" class="published">6 February 2025</time>
+<time datetime="2025-02-20" class="published">20 February 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-08-10">10 August 2025</time></dd>
+<dd class="expires"><time datetime="2025-08-24">24 August 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1080,7 +1080,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">Fiat-Shamir Heuristic</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document describes the Fiat-Shamir transform.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document describes the Fiat-Shamir transform via a stateful hash object that is capable of supporting a number of different hash functions, to "absorb" elements from different domains, and produce pseudoranom elements "squeezing" from the hash object.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1112,7 +1112,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 10 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1142,7 +1142,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         </h2>
 <nav class="toc"><ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
-            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-stateful-hash-object-api" class="internal xref">Stateful Hash Object API</a></p>
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-the-api" class="internal xref">The API</a></p>
@@ -1162,12 +1162,41 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </nav>
 </section>
 </div>
-<div id="stateful-hash-object-api">
+<div id="introduction">
 <section id="section-1">
-      <h2 id="name-stateful-hash-object-api">
-<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-stateful-hash-object-api" class="section-name selfRef">Stateful Hash Object API</a>
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">A stateful hash objects can absorb inputs incrementally and squeeze variable-length unpredictable messages.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">A stateful hash objects can absorb inputs incrementally and squeeze variable-length unpredictable messages.
+On a high level, it consists of three main components:<a href="#section-1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-2.1">
+          <p id="section-1-2.1.1">A label.<a href="#section-1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-2.2">
+          <p id="section-1-2.2.1">An underlying hash function H, in a chosen mode, which the SHO invokes to execute the actions.<a href="#section-1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-3">The core actions supported are:<a href="#section-1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-4.1">
+          <p id="section-1-4.1.1"><code>Absorb</code> indicates a sequence of len elements in input to the SHO<a href="#section-1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-4.2">
+          <p id="section-1-4.2.1"><code>Squeeze</code> indicates an amount len of output to be produced by the SHO<a href="#section-1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-5">For instance, a SHO defined by:<a href="#section-1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-6.1">
+          <p id="section-1-6.1.1">A label “test”<a href="#section-1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-6.2">
+          <p id="section-1-6.2.1">A hash function SHAKE256
+will result in a stateful hash that, given in input 32 bytes of data, will output a 32 bytes hash.<a href="#section-1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-7">More formally, a SHO is a tuple &lt;label, H&gt;.<a href="#section-1-7" class="pilcrow">¶</a></p>
 <div id="the-api">
 <section id="section-1.1">
         <h3 id="name-the-api">
@@ -1175,7 +1204,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         </h3>
 <ul class="normal">
 <li class="normal" id="section-1.1-1.1">
-            <p id="section-1.1-1.1.1"><code>SHO.init(iv) -&gt; sho</code>, creates a new <code>sho</code> object with a description;<a href="#section-1.1-1.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-1.1.1"><code>SHO.init(label) -&gt; sho</code>, creates a new <code>sho</code> object with a description;<a href="#section-1.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-1.2">
             <p id="section-1.1-1.2.1"><code>sho.absorb(values)</code>, absorbs a list of "native" elements (that is, elements in the same domain of the hash function);<a href="#section-1.1-1.2.1" class="pilcrow">¶</a></p>
