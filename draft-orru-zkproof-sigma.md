@@ -28,6 +28,14 @@ author:
 normative:
 
 informative:
+  NISTCurves: DOI.10.6028/NIST.FIPS.186-4
+  SEC1:
+    title: "SEC 1: Elliptic Curve Cryptography"
+    target: https://www.secg.org/sec1-v2.pdf
+    date: false
+    author:
+      -
+        ins: Standards for Efficient Cryptography Group (SECG)
 
 --- abstract
 
@@ -35,22 +43,49 @@ This document describes Sigma protocols, a secure, general-purpose non-interacti
 
 --- middle
 
-# Σ-protocols
+# Introduction
 
-A Sigma Protocol is a simple zero-knowledge proof of knowledge. Any sigma protocols consists of three objects:
+A Sigma Protocol is a simple zero-knowledge proof of knowledge. Any sigma protocols must define three objects:
 
-- a commitment, sometimes also called nonce. This message is computed by the prover.
-- a challenge, computed using the Fiat-Shamir transformation using a hash function.
-- a response, computed by the prover, which depends on the commitment and the challenge.
+- A commitment, sometimes also called nonce. This message is computed by the prover.
+- A challenge, computed using the Fiat-Shamir transformation using a hash function.
+- A response, computed by the prover, which depends on the commitment and the challenge.
 
-A sigma protocol allows to convince a **verifier** of the knowledge of a secret **witness** satisfying an **instance** of the `ConstraintSystem`.
+A sigma protocol allows to convince a **verifier** of the knowledge of a secret **witness** satisfying a **statement**.
 
 ## Generic interface
 
-Any sigma protocol consists of the following methods:
+A sigma protocol is an interface exposing the following functions:
+
+    def prove_short(label, statement, witness):
+        sp = SigmaProtocol.new(statement)
+        (prover_state, commitment) = sp.prover_commmit(witness)
+        challenge = SHO
+            .init(label)
+            .absorb(commitment)
+            .squeeze(1)
+
+        response = sp.prover_response(commitment, challenge)
+        return scalar_to_bytes(challenge) + scalar_to_bytes(response)
+
+    def prove_batchable(label, statement, witness):
+        sp = SigmaProtocol.new(statement)
+        (prover_state, commitment) = sp.prover_commit(witness)
+        challenge = SHO
+            .init(label)
+            .absorb(commitment)
+            .squeeze(1)
+        response = sp.prover_response(commitment, challenge)
+        return point_to_bytes(commitment) + scalar_to_bytes(response)
+
+    def verify_batchable(label, statement, proof):
+        sp = SigmaProtocol.new(statement)
+        commitment = read_group_elements(proof)
+
+Internally, each sigma protocol implements the following methods.
 
     class SigmaProtocol:
-       def new(il: bytes, instance: ConstraintSystem) -> SigmaProtocol
+       def new(instance: Statement) -> SigmaProtocol
        def prover_commit(self, witness: Witness) -> (commitment, prover_state)
        def prover_response(self, prover_state, challenge) -> response
        def verifier(self, commitment, challenge, response) -> bool
@@ -59,8 +94,7 @@ Any sigma protocol consists of the following methods:
        # optional
        def simulate_commitment(response, challenge) -> commitment
 
-In the above:
-Here's the list of functions in markdown:
+Where:
 
 - `new(il: [u8], cs: ConstraintSystem) -> SigmaProtocol`, denoting the initialization function. This function takes as input a label identifying local context information (such as: session identifiers, to avoid replay attacks; protocol metadata, to avoid hijacking; optionally, a timestamp and some pre-shared randomness, to guarantee freshness of the proof) and an instance generated via the `ConstraintSystem`, the public information shared between prover and verifier.
 This function should pre-compute parts of the statement, or initialize the state of the hash function.
@@ -77,22 +111,11 @@ The final two algorithms describe the **zero-knowledge simulator** and are optio
 
 - `simulate_commitment(response, challenge) -> commitment`, returning a simulated commitment -- the second phase of the zero-knowledge simulator.
 
-## Σ-protocols over prime-order groups
+The abstraction `SigmaProtocol` allows implementing different types of statements and combiners of those, such as OR statements, validity of t-out-of-n statements, and more.
 
-The following sub-section present concrete instantiations of Σ-protocols over prime-order groups such as ellitpic curves.
+# Σ-protocols over prime-order groups
 
-### Group abstraction
-
-Because of their dominance, the presentation in the following focuses on proof goals over elliptic curves, therefore leveraging additive notation. For prime-order
-subgroups of residue classes, all notation needs to be changed to multiplicative, and references to elliptic curves (e.g., curve) need to be replaced by their respective
-counterparts over residue classes.
-We therefore assume two objects are available to the programmer:
-
-    Group: Zero + Add<Group> + Sub<Group> + Mul<Scalar> + From<int> + Eq<Group>
-    Scalar: Zero + One + Div<Scalar> + Add<Scalar> + Sub<Scalar> + From<int> + Eq<Group>
-
-### Constraint representation
-
+The following sub-section present concrete instantiations of Σ-protocols over prime-order groups such as elliptic curves.
 Traditionally, Σ-protocols are defined in Camenish-Stadtler notation as (for example):
 
     VRF(A, B, G, H) = PoK{
@@ -101,63 +124,69 @@ Traditionally, Σ-protocols are defined in Camenish-Stadtler notation as (for ex
       G = x * H
     }
 
-Internally, they can be represented as:
+This section describes how to build and prove statements of this form programmatically.
 
-    struct ConstraintSystem {
-        // A label associated to the proof
-        label: String
-        // the list of statements to be proven
-        statements: Combiner[Statement; num_statements]
+## Group abstraction
 
-        // the number of secret scalars
-        num_scalars: usize
-        // the number of equations to be proven
-        num_statements: usize
-        // the group elements to be used in the proof
-        group_elts: Vec<Group>
-    }
+Because of their dominance, the presentation in the following focuses on proof goals over elliptic curves, therefore leveraging additive notation. For prime-order
+subgroups of residue classes, all notation needs to be changed to multiplicative, and references to elliptic curves (e.g., curve) need to be replaced by their respective
+counterparts over residue classes.
+We therefore assume two objects are available to the programmer:
 
-A statement `Statement` defines different types of predicates that can be proven by the zero-knowledge proof
-For now, consider:
+    Group: Zero + Add<Group> + Sub<Group> + Mul<Scalar> + From<int> + Eq<Group> + Serialize + Deserialize
+    Scalar: Zero + One + Div<Scalar> + Add<Scalar> + Sub<Scalar> + From<int> + Eq<Group> + Serialize + Deserialize
 
-    enum Statement {
-       Eq(Equation),
-    }
+We detail the functions that can be invoked on these objects. Example choices can be found in {{ciphersuites}}.
 
-The abstraction `Statement` allows to implement different types of statements and combiners of those, such as OR statements, validity of t-out-of-n statements, and more.
+### Group
 
-#### Equations
-
-The object `Equation` encodes linear relation:
-
-    struct Equation {
-        // An index in the list of generators representing the left-hand side part of the equation
-        lhs: usize
-        // A list of (ScalarIndex, GroupEltIndex) referring to a scalar and a generator
-        rhs: Vec<(usize, usize)>
-    }
+- `order()`: Outputs the order of the group `p`.
+- `random()`: outputs a random element
+- `serialize([Group; N])`: serializes a list of group elements and returns a canonical byte array `buf` of fixed length `Ng * N`.
+- `deserialize(buf)`: Attempts to map a byte array `buf` of size `Ng * N` into `[Group; N]`, and fails if the input is not the valid canonical byte representation of an element of the group. This function can raise a DeserializeError if deserialization fails.
 
 
-A witness is defined as:
+### Scalar
+
+- `random()`: outputs a random element
+- `serialize([Scalar; N])`: serializes a list of scalars and returns their canonical representation of fixed length `Ns * N`.
+
+## Witness representation
+
+A witness is simply a list of `num_scalars` elements.
 
     struct Witness {
         scalars: [Scalar; num_scalars] // The set of secret scalars
     }
 
-For those familiar with the matrix notation, `ConstraintSystem` is encoding a sparse linear equation of the form `A * scalars = B`, where `A` is a matrix of `num_statements` rows, `scalars.len` columns, of group elements. Each element is identified by a pair `(usize, usize)` denoting the column index, and the value (an index referring to `generators`).
-The vector `B` is a list of indices referring to `generators`.
+### Constraint representation
 
-This is equivalently done with a constraint system:
+Internally, the constraint can be represented as:
 
-    cs = ConstraintSystem.new("VRF")
+    struct Equations {
+        // the list of statements to be proven
+        matrix: [LinearCombination<ScalarIndex, &Group>; num_statements]
+        // An list of references to group elements representing the left-hand side part of the equations
+        image: [&Group; num_statements]
+
+        // the number of secret scalars
+        num_scalars: usize
+        // the number of equations to be proven
+        num_statements: usize
+    }
+
+The object `LinearCombination` encodes pairs of indices of the witness vector with group elements.
+The initial example of the VRF can therefore be expressed with the following constraints:
+
+    cs = Equations()
     [x] = cs.allocate_scalars(1)
     [A, B, G, H] = cs.allocate_group_elt(4)
     cs.append_equation(lhs=A, rhs=[(x, B)])
     cs.append_equation(lhs=G, rhs=[(x, H)])
 
-In the above, `ConstraintSystem.new()` creates a new `ConstraintSystem` with label `"VRF"`.
+In the above, `Equations.new()` creates a new `Equations` with label `"VRF"`.
 
-#### ConstraintSystem instantiation
+#### Instantiation of the constraints
 
     new(label)
 
@@ -171,13 +200,14 @@ In the above, `ConstraintSystem.new()` creates a new `ConstraintSystem` with lab
 
     Procedure:
 
-    1.  return ConstraintSystem {
+    1.  return Equations {
     2.        label,
     3.        num_statements: 0,
     4.        num_scalars: 0,
-    5.        group_elts: [],
-    6.        statements: [],
-    7.    }
+    5.        group_elements: [],
+    6.        matrix: [],
+    7.        image: []
+    8.    }
 
 #### Scalar witness allocation
 
@@ -210,8 +240,8 @@ In the above, `ConstraintSystem.new()` creates a new `ConstraintSystem` with lab
 
     Procedure:
 
-    1. indices = range(len(self.group_elts), len(self.group_elts) + n)
-    2. self.group_elts.extend([None] * n)
+    1. indices = range(len(self.group_elts), len(self.group_elements) + n)
+    2. self.group_elements.extend([None] * n)
     3. return indices
 
 #### Group element assignment
@@ -226,7 +256,7 @@ In the above, `ConstraintSystem.new()` creates a new `ConstraintSystem` with lab
 
     Procedure:
 
-    1. self.group_elts[ptr] = value
+    1. self.group_elements[ptr] = value
 
 #### Enforcing an equation
 
@@ -237,7 +267,7 @@ This function adds an equation statement constraint to the instance, expressed a
     Inputs:
 
     - self, the current state of the constraint system
-    - lhs, the left-hand side of the equation (an index in the list of generators)
+    - lhs, the left-hand side of the equation
     - rhs, the right-hand side of the equation (a list of (ScalarIndex, GroupEltIndex) pairs)
 
     Outputs:
@@ -246,33 +276,32 @@ This function adds an equation statement constraint to the instance, expressed a
 
     Procedure:
 
-    1. equation = Equation {lhs, rhs}
-    2. self.num_statements += 1
-    3. self.statements.append(equation)
+    1. self.num_statements += 1
+    2. self.image.append(lhs)
+    3. self.matrix.append(rhs)
 
 A witness can be mapped to a group element via:
 
-    class Witness:
-        def map(cs):
-            assert cs.num_scalars = self.scalars.len()
-            image = [0; Group]
-            for i in range(cs.num_statements):
-                eq_scalars = [self.scalars[idx_pair[0]] for idx_pair in cs.equations[i].rhs]
-                eq_group_elt = [cs.group_elts[idx_pair[1]] for idx_pair in cs.equations[i].rhs]
-                image[i] = multi_scalar_multiplication(eq_scalars, eq_group_elt)
-            return image
+    def map(self, witness: [Scalar; num_scalars]):
+      assert self.num_scalars = self.scalars.len()
+      image = [0; Group]
+      for i in range(self.num_statements):
+          eq_scalars = [self.scalars[idx_pair[0]]
+                        for idx_pair in self.matrix[i]]
+          eq_group_elt = [self..group_elements[idx_pair[1]] for idx_pair in self.matrix[i]]
+          image[i] = multi_scalar_multiplication(eq_scalars, eq_group_elt)
+      return image
 
 ## Core protocol
 
     class SigmaProtocol:
-        def new(cs: ConstraintSystem):
-            self.iv = generate_statement_iv(statement)
-            self.cs = cs
+        def new(statement: Statement):
+            self.statement = statement
 
         def prover_commit(self, witness: Witness):
-            nonces = SHO.init(iv).random_seed().divide().absorb_scalars(witness).squeeze_scalars(self.cs.num_scalars)
+            nonces = Scalar::random()
             prover_state = (witness, nonces)
-            commitment = self.cs.map(witness)
+            commitment = self.statement.map(witness)
             return (prover_state, commitment)
 
         def prover_response(self, prover_state, challenge):
@@ -281,11 +310,7 @@ A witness can be mapped to a group element via:
                 response[i] = witness[i] + challenge * nonces[i]
             return response
 
-        def challenge(self, commitment):
-            SHO.init(iv).absorb_group_elt(commitment).squeeze_scalar(1)
-
-
-#### Verifier procedure
+### Verifier procedure
 
     verify(self, commitment, challenge, response)
 
@@ -302,8 +327,8 @@ A witness can be mapped to a group element via:
 
     Procedure:
 
-    1. image = [equation.lhs for equation in self.cs.statements.equations]
-    2. expected_commitment = challenge * image + self.cs.map(response)
+    1. image = [equation.lhs for equation in self.statement.equations]
+    2. expected_commitment = challenge * image + self.statement.map(response)
     3. return expected_commitment == commitment
 
 ### Prover
@@ -311,24 +336,24 @@ A witness can be mapped to a group element via:
 We describe below the prover's wrapping function.
 
     def prove_short(statement, witness):
-        sp = SigmaProtocol.new(statement)
-        (prover_state, commitment) = sp.prover_commmit(witness)
-        challenge = sp.challenge(commitment)
-        response = sp.prover_response(commitment, challenge)
-        return scalar_to_bytes(challenge) + scalar_to_bytes(response)
+      sp = SigmaProtocol.new(statement)
+      (prover_state, commitment) = sp.prover_commmit(witness)
+      challenge = sp.challenge(commitment)
+      response = sp.prover_response(commitment, challenge)
+      return scalar_to_bytes(challenge) + scalar_to_bytes(response)
 
     def prove_batchable(statement, witness):
-        sp = SigmaProtocol.new(statement)
-        (prover_state, commitment) = sp.prover_commmit(witness)
-        challenge = sp.challenge(commitment)
-        response = sp.prover_response(commitment, challange)
-        return point_to_bytes(commitment) + scalar_to_bytes(response)
+      sp = SigmaProtocol.new(statement)
+      (prover_state, commitment) = sp.prover_commmit(witness)
+      challenge = sp.challenge(commitment)
+      response = sp.prover_response(commitment, challange)
+      return point_to_bytes(commitment) + scalar_to_bytes(response)
 
 ### Verifier
 
     def verify_batchable(statement, proof):
-        sp = SigmaProtocol.new(statement)
-        commitment = read_group_elements(proof)
+      sp = SigmaProtocol.new(statement)
+      commitment = read_group_elements(proof)
 
 ## Nonce and challenge derivation
 
@@ -382,9 +407,25 @@ Where:
     - `scalar_bytes` is the number of bytes required to produce a uniformly random group element
     - `random` is a random seed obtained from the operating system memory
 
-## Proof generation
+# Ciphersuites
 
-## Acknowledgments
+## P-384
+
+This ciphersuite uses P-384 {{NISTCurves}} for the Group.
+
+### Elliptic curve group of P-384 (secp384r1) {{NISTCurves}}
+
+- `order()`: Return 0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52973.
+- `serialize([A])`: Implemented using the compressed Elliptic-Curve-Point-to-Octet-String method according to {{SEC1}}; `Ng = 49`.
+- `deserialize(buf)`: Implemented by attempting to read `buf` into chunks of 49-byte arrays and convert them using the compressed Octet-String-to-Elliptic-Curve-Point method according to {{SEC1}}, and then performs partial public-key validation as defined in section 5.6.2.3.4 of {{!KEYAGREEMENT=DOI.10.6028/NIST.SP.800-56Ar3}}. This includes checking that the coordinates of the resulting point are in the correct range, that the point is on the curve, and that the point is not the point at infinity.
+
+### Scalar Field of P-384 (secp384r1)
+
+- `serialize(s)`: Relies on the Field-Element-to-Octet-String conversion according to {{SEC1}}; `Ns = 48`.
+- `deserialize(buf)`: Reads the byte array `buf` in chunks of 48 bytes using Octet-String-to-Field-Element from {{SEC1}}. This function can fail if the input does not represent a Scalar in the range [0, G.Order() - 1].
+
+
+# Acknowledgments
 {:numbered ="false"}
 
 Jan Bobolz, Stephan Krenn, Mary Maller, Ivan Visconti, Yuwen Zhang.
