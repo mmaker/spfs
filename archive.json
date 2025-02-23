@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-20T01:08:28.375105+00:00",
+  "timestamp": "2025-02-23T01:13:00.548335+00:00",
   "repo": "mmaker/spfs",
   "labels": [
     {
@@ -49,6 +49,23 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDONyiw_86rFQiu",
+      "title": "Add reference implementation, test vectors",
+      "url": "https://github.com/mmaker/spfs/issues/1",
+      "state": "OPEN",
+      "author": "cathieyun",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "To facilitate adoption, it would be helpful to add a reference implementation, which produces test vectors. \nThe P384 ciphersuite as suggested in the spec would be sufficient for now.",
+      "createdAt": "2025-02-22T00:34:09Z",
+      "updatedAt": "2025-02-22T00:34:09Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": []
 }
