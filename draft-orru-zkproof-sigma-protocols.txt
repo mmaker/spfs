@@ -4,12 +4,12 @@
 
 Network Working Group                                            M. Orrù
 Internet-Draft                                                      CNRS
-Intended status: Informational                          20 February 2025
-Expires: 24 August 2025
+Intended status: Informational                          26 February 2025
+Expires: 30 August 2025
 
 
                             Sigma Protocols
-                    draft-orru-zkproof-sigma-latest
+               draft-orru-zkproof-sigma-protocols-latest
 
 Abstract
 
@@ -27,7 +27,7 @@ About This Document
    The latest revision of this draft can be found at
    https://mmaker.github.io/stdsigma/draft-orru-zkproof-sigma.html.
    Status information for this document may be found at
-   https://datatracker.ietf.org/doc/draft-orru-zkproof-sigma/.
+   https://datatracker.ietf.org/doc/draft-orru-zkproof-sigma-protocols/.
 
    Source for this draft and an issue tracker can be found at
    https://github.com/mmaker/stdsigma.
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 August 2025.
+   This Internet-Draft will expire on 30 August 2025.
 
 Copyright Notice
 
