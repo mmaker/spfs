@@ -2,7 +2,7 @@
 title: "Sigma Protocols"
 category: info
 
-docname: draft-orru-zkproof-sigma-latest
+docname: draft-orru-zkproof-sigma-protocols-latest
 submissiontype: independent
 number:
 date:
@@ -17,7 +17,7 @@ venue:
 #  mail: WG@examplecom
 #  arch: https://examplecom/WG
   github: "mmaker/stdsigma"
-  latest: "https://mmaker.github.io/stdsigma/draft-orru-zkproof-sigma.html"
+  latest: "https://mmaker.github.io/stdsigma/draft-orru-zkproof-sigma-protocols.html"
 
 author:
  -

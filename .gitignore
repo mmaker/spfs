@@ -18,7 +18,7 @@
 Gemfile.lock
 archive.json
 draft-orru-zkproof-fiat-shamir.xml
-draft-orru-zkproof-sigma.xml
+draft-orru-zkproof-sigma-protocols.xml
 package-lock.json
 report.xml
 !requirements.txt

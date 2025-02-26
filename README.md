@@ -11,10 +11,10 @@ This is the working area for individual Internet-Drafts.
 
 ## Sigma Protocols
 
-* [Editor's Copy](https://mmaker.github.io/spfs/#go.draft-orru-zkproof-sigma.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-orru-zkproof-sigma)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-orru-zkproof-sigma)
-* [Compare Editor's Copy to Individual Draft](https://mmaker.github.io/spfs/#go.draft-orru-zkproof-sigma.diff)
+* [Editor's Copy](https://mmaker.github.io/spfs/#go.draft-orru-zkproof-sigma-protocols.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-orru-zkproof-sigma-protocols)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-orru-zkproof-sigma-protocols)
+* [Compare Editor's Copy to Individual Draft](https://mmaker.github.io/spfs/#go.draft-orru-zkproof-sigma-protocols.diff)
 
 
 ## Contributing
