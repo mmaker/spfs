@@ -4,8 +4,8 @@
 
 Network Working Group                                            M. Orrù
 Internet-Draft                                                      CNRS
-Intended status: Informational                          26 February 2025
-Expires: 30 August 2025
+Intended status: Informational                              1 March 2025
+Expires: 2 September 2025
 
 
                             Sigma Protocols
@@ -25,8 +25,8 @@ About This Document
    This note is to be removed before publishing as an RFC.
 
    The latest revision of this draft can be found at
-   https://mmaker.github.io/stdsigma/draft-orru-zkproof-sigma.html.
-   Status information for this document may be found at
+   https://mmaker.github.io/stdsigma/draft-orru-zkproof-sigma-
+   protocols.html.  Status information for this document may be found at
    https://datatracker.ietf.org/doc/draft-orru-zkproof-sigma-protocols/.
 
    Source for this draft and an issue tracker can be found at
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 August 2025.
+   This Internet-Draft will expire on 2 September 2025.
 
 Copyright Notice
 
@@ -249,8 +249,8 @@ Scalar: Zero + One + Div<Scalar> + Add<Scalar> + Sub<Scalar> + From<int> + Eq<Gr
 
    *  random(): outputs a random element
 
-   *  serialize([Scalar; N]): serializes a list of scalars and returns
-      their canonical representation of fixed length Ns * N.
+   *  **serialize**([Scalar; N]): serializes a list of scalars and
+      returns their canonical representation of fixed length Ns * N.
 
 2.2.  Witness representation
 
@@ -388,12 +388,12 @@ Procedure:
    A witness can be mapped to a group element via:
 
 def map(self, witness: [Scalar; num_scalars]):
-  assert self.num_scalars = self.scalars.len()
+  assert self.num_scalars = witness.len()
   image = [0; Group]
   for i in range(self.num_statements):
       eq_scalars = [self.scalars[idx_pair[0]]
                     for idx_pair in self.matrix[i]]
-      eq_group_elt = [self..group_elements[idx_pair[1]] for idx_pair in self.matrix[i]]
+      eq_group_elt = [self.group_elements[idx_pair[1]] for idx_pair in self.matrix[i]]
       image[i] = multi_scalar_multiplication(eq_scalars, eq_group_elt)
   return image
 
