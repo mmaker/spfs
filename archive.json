@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-02T01:13:59.302350+00:00",
+  "timestamp": "2025-03-04T01:10:54.740244+00:00",
   "repo": "mmaker/spfs",
   "labels": [
     {
@@ -63,6 +63,70 @@
       "body": "To facilitate adoption, it would be helpful to add a reference implementation, which produces test vectors. \nThe P384 ciphersuite as suggested in the spec would be sufficient for now.",
       "createdAt": "2025-02-22T00:34:09Z",
       "updatedAt": "2025-02-22T00:34:09Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 2,
+      "id": "I_kwDONyiw_86sOPU0",
+      "title": "Isolate `Scalar` structure from `Group` class",
+      "url": "https://github.com/mmaker/spfs/issues/2",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Currently `Scalar` methods are inside `Group`, which does not allow for an appropriate Fiat-Shamir transform. There should be a separate `ScalarField` type attribute inside `Group`, performing the scalar operations. ",
+      "createdAt": "2025-03-02T08:43:45Z",
+      "updatedAt": "2025-03-02T08:43:45Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDONyiw_86sQM3f",
+      "title": "Publish proof-of-concept implementation",
+      "url": "https://github.com/mmaker/spfs/issues/3",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "An ideal proof-of-concept implementation should contain 3 examples: \n- DLEQ proofs\n- proofs of ElGamal encryption\n- Schnorr proof of knowledge of a secret key",
+      "createdAt": "2025-03-03T01:11:46Z",
+      "updatedAt": "2025-03-03T01:11:46Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDONyiw_86sQNDO",
+      "title": "Create test vectors for implementation",
+      "url": "https://github.com/mmaker/spfs/issues/4",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Create example test vectors for the examples in the implementation.",
+      "createdAt": "2025-03-03T01:12:37Z",
+      "updatedAt": "2025-03-03T01:12:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 5,
+      "id": "I_kwDONyiw_86sQNgc",
+      "title": "Isolate commitment serialization from prove_batchable",
+      "url": "https://github.com/mmaker/spfs/issues/5",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The method `prove_batchable` and `verify_batchable` should be agnostic wrt the sigma protocol and the choice of the hash function. \nIn order for this to happen, commitment and response serialization must be deferred to a separate procedure in SigmaProtocol.\nTherefore:  move serialization to `serialize_commitment` and `serialize_response`.",
+      "createdAt": "2025-03-03T01:14:39Z",
+      "updatedAt": "2025-03-03T01:14:39Z",
       "closedAt": null,
       "comments": []
     }
