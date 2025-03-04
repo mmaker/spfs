@@ -9,12 +9,12 @@
 <meta content='
        This document describes the Fiat-Shamir transform via a stateful hash object that is capable of supporting a number of different hash functions, to "absorb" elements from different domains, and produce pseudoranom elements "squeezing" from the hash object. 
     ' name="description">
-<meta content="xml2rfc 3.27.0" name="generator">
+<meta content="xml2rfc 3.28.0" name="generator">
 <meta content="zero knowledge" name="keyword">
 <meta content="hash" name="keyword">
 <meta content="draft-orru-zkproof-fiat-shamir-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.27.0
+  xml2rfc 3.28.0
     Python 3.12.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -1049,7 +1049,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Orrù</td>
-<td class="center">Expires 3 September 2025</td>
+<td class="center">Expires 5 September 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1062,12 +1062,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-orru-zkproof-fiat-shamir-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-02" class="published">2 March 2025</time>
+<time datetime="2025-03-04" class="published">4 March 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-03">3 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-09-05">5 September 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1112,7 +1112,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1142,21 +1142,48 @@ svg :is([fill="white"], [fill^="#fff"]) {
         </h2>
 <nav class="toc"><ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
-            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-the-api" class="internal xref">The API</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-hash-registry" class="internal xref">Hash registry</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
-                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-the-api" class="internal xref">The API</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-shake128-implementation" class="internal xref">Shake128 implementation</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.1">
+                    <p id="section-toc.1-1.3.2.1.2.1.1" class="keepWithNext"><a href="#section-3.1.1" class="auto internal xref">3.1.1</a>.  <a href="#name-initialization" class="internal xref">Initialization</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
-                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-initialization-vector-for-g" class="internal xref">Initialization vector for generic protocols</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.2">
+                    <p id="section-toc.1-1.3.2.1.2.2.1"><a href="#section-3.1.2" class="auto internal xref">3.1.2</a>.  <a href="#name-absorb" class="internal xref">Absorb</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
-                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-sigma-protocols-example" class="internal xref">Sigma protocols example</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.3">
+                    <p id="section-toc.1-1.3.2.1.2.3.1"><a href="#section-3.1.3" class="auto internal xref">3.1.3</a>.  <a href="#name-squeeze" class="internal xref">Squeeze</a></p>
+</li>
+                </ul>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-codecs-registry" class="internal xref">Codecs registry</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-p-384-secp384r1" class="internal xref">P-384 (secp384r1)</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.1">
+                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="auto internal xref">4.1.1</a>.  <a href="#name-absorb-scalars" class="internal xref">Absorb scalars</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.2">
+                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="auto internal xref">4.1.2</a>.  <a href="#name-squeeze-scalars" class="internal xref">Squeeze scalars</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1167,7 +1194,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">A stateful hash objects can absorb inputs incrementally and squeeze variable-length unpredictable messages.
+<p id="section-1-1">A stateful hash object (SHO) can absorb inputs incrementally and squeeze variable-length unpredictable messages.
 On a high level, it consists of three main components:<a href="#section-1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-2.1">
@@ -1180,63 +1207,157 @@ On a high level, it consists of three main components:<a href="#section-1-1" cla
 <p id="section-1-3">The core actions supported are:<a href="#section-1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-4.1">
-          <p id="section-1-4.1.1"><code>Absorb</code> indicates a sequence of len elements in input to the SHO<a href="#section-1-4.1.1" class="pilcrow">¶</a></p>
+          <p id="section-1-4.1.1"><code>Absorb</code> indicates a sequence of len elements in input<a href="#section-1-4.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-4.2">
-          <p id="section-1-4.2.1"><code>Squeeze</code> indicates an amount len of output to be produced by the SHO<a href="#section-1-4.2.1" class="pilcrow">¶</a></p>
+          <p id="section-1-4.2.1"><code>Squeeze</code> indicates an amount len of output to be produced<a href="#section-1-4.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-5">For instance, a SHO defined by:<a href="#section-1-5" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-1-6.1">
-          <p id="section-1-6.1.1">A label “test”<a href="#section-1-6.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-1-6.2">
-          <p id="section-1-6.2.1">A hash function SHAKE256
-will result in a stateful hash that, given in input 32 bytes of data, will output a 32 bytes hash.<a href="#section-1-6.2.1" class="pilcrow">¶</a></p>
-</li>
-      </ul>
-<p id="section-1-7">More formally, a SHO is a tuple &lt;label, H&gt;.<a href="#section-1-7" class="pilcrow">¶</a></p>
+</section>
+</div>
 <div id="the-api">
-<section id="section-1.1">
-        <h3 id="name-the-api">
-<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-the-api" class="section-name selfRef">The API</a>
-        </h3>
-<ul class="normal">
-<li class="normal" id="section-1.1-1.1">
-            <p id="section-1.1-1.1.1"><code>SHO.init(label) -&gt; sho</code>, creates a new <code>sho</code> object with a description;<a href="#section-1.1-1.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-1.2">
-            <p id="section-1.1-1.2.1"><code>sho.absorb(values)</code>, absorbs a list of "native" elements (that is, elements in the same domain of the hash function);<a href="#section-1.1-1.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-1.3">
-            <p id="section-1.1-1.3.1"><code>sho.squeeze(length)</code>, squeezes from the <code>sho</code> object a list of "native" elements<a href="#section-1.1-1.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.1-1.4">
-            <p id="section-1.1-1.4.1"><code>sho.finalize()</code>, deletes the hash object safely.<a href="#section-1.1-1.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-</section>
-</div>
-<div id="initialization-vector-for-generic-protocols">
-<section id="section-1.2">
-        <h3 id="name-initialization-vector-for-g">
-<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-initialization-vector-for-g" class="section-name selfRef">Initialization vector for generic protocols</a>
-      </h3>
-</section>
-</div>
-<div id="sigma-protocols-example">
-<section id="section-1.3">
-        <h3 id="name-sigma-protocols-example">
-<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-sigma-protocols-example" class="section-name selfRef">Sigma protocols example</a>
-        </h3>
-<p id="section-1.3-1">Two hash states are needed, one public and one private for nonce generation. They are built as follows.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.3-2">
+<section id="section-2">
+      <h2 id="name-the-api">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-the-api" class="section-name selfRef">The API</a>
+      </h2>
+<p id="section-2-1">A stateful hash object has the following interface:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">class SHO:
+      Unit<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-2-3">
 <pre>
-iv  = SHA3-256(label)
-challenge = SHAKE128(iv || commitment)
-private_nonce = SHAKE128(iv || random || pad || witness)
-</pre><a href="#section-1.3-2" class="pilcrow">¶</a>
+  def new(label: bytes) -&gt; SHO
+  def absorb(self, x)
+  def squeeze(self, length: int) -&gt; [Unit]
+  def finalize(self)
+</pre><a href="#section-2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2-4">were<a href="#section-2-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-5.1">
+          <p id="section-2-5.1.1"><code>SHO.init(label) -&gt; sho</code>, creates a new <code>sho</code> object with a description label <code>label</code>;<a href="#section-2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-5.2">
+          <p id="section-2-5.2.1"><code>sho.absorb(values)</code>, absorbs a list of native elements (that is, of type <code>Unit</code>);<a href="#section-2-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-5.3">
+          <p id="section-2-5.3.1"><code>sho.squeeze(length)</code>, squeezes from the <code>sho</code> object a list of <code>Unit</code> elements.<a href="#section-2-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-5.4">
+          <p id="section-2-5.4.1"><code>sho.finalize()</code>, deletes the hash object safely.<a href="#section-2-5.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-2-6">The above can be extended to support absorption and squeeze from different domains. Such extensions are called codecs.<a href="#section-2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="hash-registry">
+<section id="section-3">
+      <h2 id="name-hash-registry">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-hash-registry" class="section-name selfRef">Hash registry</a>
+      </h2>
+<div id="shake128-implementation">
+<section id="section-3.1">
+        <h3 id="name-shake128-implementation">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-shake128-implementation" class="section-name selfRef">Shake128 implementation</a>
+        </h3>
+<p id="section-3.1-1">SHAKE128 is a variable-length hash function based on the Keccak sponge construction [SHA3]. It belongs to the SHA-3 family but offers a flexible output length, and provides 128 bits of security against collision attacks, regardless of the output length requested.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<div id="initialization">
+<section id="section-3.1.1">
+          <h4 id="name-initialization">
+<a href="#section-3.1.1" class="section-number selfRef">3.1.1. </a><a href="#name-initialization" class="section-name selfRef">Initialization</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.1.1-1">
+<pre>
+new(self, label)
+
+Inputs:
+
+- label, a byte array
+
+Outputs:
+
+-  a stateful hash object interface
+
+1. h = shake_128(label)
+2. return h
+</pre><a href="#section-3.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="absorb">
+<section id="section-3.1.2">
+          <h4 id="name-absorb">
+<a href="#section-3.1.2" class="section-number selfRef">3.1.2. </a><a href="#name-absorb" class="section-name selfRef">Absorb</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.1.2-1">
+<pre>
+absorb(sho, x)
+
+Inputs:
+
+- sho, a hash state
+- x, a byte array
+
+1. h.update(x)
+</pre><a href="#section-3.1.2-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1.2-2">This method is also re-exported as <code>absorb_bytes</code>.<a href="#section-3.1.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="squeeze">
+<section id="section-3.1.3">
+          <h4 id="name-squeeze">
+<a href="#section-3.1.3" class="section-number selfRef">3.1.3. </a><a href="#name-squeeze" class="section-name selfRef">Squeeze</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.1.3-1">
+<pre>
+squeeze(sho, length)
+
+Inputs:
+
+- sho, a stateful hash object
+- length, the number of elements to be squeezed
+
+1. h.digest(length)
+</pre><a href="#section-3.1.3-1" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1.3-2">This method is also re-exported as <code>squeeze_bytes</code>.<a href="#section-3.1.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="codecs-registry">
+<section id="section-4">
+      <h2 id="name-codecs-registry">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-codecs-registry" class="section-name selfRef">Codecs registry</a>
+      </h2>
+<div id="p-384-secp384r1">
+<section id="section-4.1">
+        <h3 id="name-p-384-secp384r1">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-p-384-secp384r1" class="section-name selfRef">P-384 (secp384r1)</a>
+        </h3>
+<div id="absorb-scalars">
+<section id="section-4.1.1">
+          <h4 id="name-absorb-scalars">
+<a href="#section-4.1.1" class="section-number selfRef">4.1.1. </a><a href="#name-absorb-scalars" class="section-name selfRef">Absorb scalars</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-4.1.1-1">
+<pre>
+absorb_scalars(sho, scalars)
+
+Inputs: ### Absorb elements
+</pre><a href="#section-4.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="squeeze-scalars">
+<section id="section-4.1.2">
+          <h4 id="name-squeeze-scalars">
+<a href="#section-4.1.2" class="section-number selfRef">4.1.2. </a><a href="#name-squeeze-scalars" class="section-name selfRef">Squeeze scalars</a>
+          </h4>
+<p id="section-4.1.2-1">[SHA3] FIPS PUB 202, "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions," August 2015. https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
+</section>
 </div>
 </section>
 </div>
