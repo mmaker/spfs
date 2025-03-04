@@ -191,7 +191,7 @@ In the above, `Equations.new()` creates a new `Equations` with label `"VRF"`.
 
     Inputs:
 
-    - labels, a byte array
+    - label, a byte array
 
     Outputs:
 

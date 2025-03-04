@@ -14,10 +14,10 @@ keyword:
  - zero knowledge
  - hash
 venue:
-#  group: WG
-#  type: Working Group
-#  mail: WG@example.com
-#  arch: https://example.com/WG
+  group: "Crypto Forum"
+  type: ""
+  mail: "cfrg@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/cfrg"
   github: "mmaker/stdsigma"
   latest: "https://mmaker.github.io/stdsigma/draft-orru-zkproof-fiat-shamir.html"
 
@@ -30,6 +30,9 @@ author:
 normative:
 
 informative:
+  SHA3:
+    title: "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions"
+    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
 
 --- abstract
 
@@ -55,14 +58,14 @@ The core actions supported are:
 A stateful hash object has the following interface:
 
   class SHO:
-      Unit
+      type Unit
 
       def new(label: bytes) -> SHO
       def absorb(self, x)
       def squeeze(self, length: int) -> [Unit]
       def finalize(self)
 
-were
+where
 
 - `SHO.init(label) -> sho`, creates a new `sho` object with a description label `label`;
 - `sho.absorb(values)`, absorbs a list of native elements (that is, of type `Unit`);
@@ -76,7 +79,6 @@ The above can be extended to support absorption and squeeze from different domai
 ## Shake128 implementation
 
 SHAKE128 is a variable-length hash function based on the Keccak sponge construction [SHA3]. It belongs to the SHA-3 family but offers a flexible output length, and provides 128 bits of security against collision attacks, regardless of the output length requested.
-
 
 ### Initialization
 
@@ -128,8 +130,73 @@ This method is also re-exported as `squeeze_bytes`.
     absorb_scalars(sho, scalars)
 
     Inputs:
+
+    - sho, a stateful hash object
+    - scalars, a list of elements of P-384's scalar field
+
+    Constants:
+
+    - scalar_byte_length = ceil(384/8)
+
+    1. for scalar in scalars:
+    2.     sho.absorb_bytes(scalar_to_bytes(scalar))
+
+Where the function `scalar_to_bytes` is defined in {#notation}
+
 ### Absorb elements
+
+    absorb_elements(sho, elements)
+
+    Inputs:
+
+    - sho, a stateful hash objects
+    - elements, a list of P-384 group elements
+
+    1. for element in elements:
+    2.     sho.absorb_bytes(ecpoint_to_bytes(element))
 
 ### Squeeze scalars
 
-[SHA3] FIPS PUB 202, "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions," August 2015. https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
+    squeeze_scalars(sho, length)
+
+    Inputs:
+
+    - sho, a stateful hash object
+    - length, an unsiged integer of 64 bits determining the output length.
+
+    1. for i in range(length):
+    2.     scalar_bytes = sho.squeeze_bytes(field_bytes_length + 16)
+    3.     scalars.append(bytes_to_scalar_mod_order(scalar_bytes))
+
+
+# Notation and Terminology {#notation}
+
+For an elliptic curve, we consider two fields, the coordinate fields, which indicates the field over which the elliptic curve equation is defined, and the scalar field, over which the scalar operations are performed.
+
+The following functions and notation are used throughout the document.
+
+- `concat(x0, ..., xN)`: Concatenation of byte strings.
+- `bytes_to_int` and `scalar_to_bytes`: Convert a byte string to and from a non-negative integer.
+  `bytes_to_int` and `scalar_to_bytes` are implemented as `OS2IP` and `I2OSP` as described in
+  {{!RFC8017}}, respectively. Note that these functions operate on byte strings
+  in big-endian byte order. These functions MUST raise an exception if the integer over which they
+  We consider the function `bytes_to_in`
+- The function `ecpoint_to_bytes` converts an elliptic curve point in affine-form into an array string of length `ceil(ceil(log2(coordinate_field_order))/ 8) + 1` using `int_to_bytes` prepended by one byte. This is defined as
+
+    ecpoint_to_bytes(element)
+
+    Inputs:
+
+    - `element`, an elliptic curve element in affine form, with attributes `x` and `y` corresponding to its affine coordinates, represented as integers modulo the coordinate field order.
+
+    Outputs:
+
+    A byte array
+
+    Constants:
+
+    field_bytes_length, the number of bytes to represent the scalar element, equal to `ceil(log2(field.order()))`.
+
+
+    1. byte = 2 if sgn0(element.y) == 0 else 3
+    2. return I2OSP(byte, 1) + I2OSP(x, field_bytes_length)
