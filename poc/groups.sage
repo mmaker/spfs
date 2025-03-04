@@ -41,6 +41,7 @@ def OS2IP_le(octets, skip_assert=False):
     return ret
 
 class Group(object):
+    # Impl ScalarField Class
     ScalarField = None
 
     def __init__(self, name):
