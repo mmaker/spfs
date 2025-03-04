@@ -39,7 +39,7 @@ This document describes the Fiat-Shamir transform via a stateful hash object tha
 
 # Introduction
 
-A stateful hash objects can absorb inputs incrementally and squeeze variable-length unpredictable messages.
+A stateful hash object (SHO) can absorb inputs incrementally and squeeze variable-length unpredictable messages.
 On a high level, it consists of three main components:
 
 - A label.
@@ -47,30 +47,89 @@ On a high level, it consists of three main components:
 
 The core actions supported are:
 
-- `Absorb` indicates a sequence of len elements in input to the SHO
-- `Squeeze` indicates an amount len of output to be produced by the SHO
+- `Absorb` indicates a sequence of len elements in input
+- `Squeeze` indicates an amount len of output to be produced
 
-For instance, a SHO defined by:
+# The API
 
-- A label “test”
-- A hash function SHAKE256
-will result in a stateful hash that, given in input 32 bytes of data, will output a 32 bytes hash.
+A stateful hash object has the following interface:
 
-More formally, a SHO is a tuple <label, H>.
+  class SHO:
+      Unit
 
-## The API
+      def new(label: bytes) -> SHO
+      def absorb(self, x)
+      def squeeze(self, length: int) -> [Unit]
+      def finalize(self)
 
-- `SHO.init(label) -> sho`, creates a new `sho` object with a description;
-- `sho.absorb(values)`, absorbs a list of "native" elements (that is, elements in the same domain of the hash function);
-- `sho.squeeze(length)`, squeezes from the `sho` object a list of "native" elements
+were
+
+- `SHO.init(label) -> sho`, creates a new `sho` object with a description label `label`;
+- `sho.absorb(values)`, absorbs a list of native elements (that is, of type `Unit`);
+- `sho.squeeze(length)`, squeezes from the `sho` object a list of `Unit` elements.
 - `sho.finalize()`, deletes the hash object safely.
 
-## Initialization vector for generic protocols
+The above can be extended to support absorption and squeeze from different domains. Such extensions are called codecs.
 
-## Sigma protocols example
+# Hash registry
 
-Two hash states are needed, one public and one private for nonce generation. They are built as follows.
+## Shake128 implementation
 
-    iv  = SHA3-256(label)
-    challenge = SHAKE128(iv || commitment)
-    private_nonce = SHAKE128(iv || random || pad || witness)
+SHAKE128 is a variable-length hash function based on the Keccak sponge construction [SHA3]. It belongs to the SHA-3 family but offers a flexible output length, and provides 128 bits of security against collision attacks, regardless of the output length requested.
+
+
+### Initialization
+
+    new(self, label)
+
+    Inputs:
+
+    - label, a byte array
+
+    Outputs:
+
+    -  a stateful hash object interface
+
+    1. h = shake_128(label)
+    2. return h
+
+### Absorb
+
+    absorb(sho, x)
+
+    Inputs:
+
+    - sho, a hash state
+    - x, a byte array
+
+    1. h.update(x)
+
+This method is also re-exported as `absorb_bytes`.
+
+### Squeeze
+
+    squeeze(sho, length)
+
+    Inputs:
+
+    - sho, a stateful hash object
+    - length, the number of elements to be squeezed
+
+    1. h.digest(length)
+
+This method is also re-exported as `squeeze_bytes`.
+
+# Codecs registry
+
+## P-384 (secp384r1)
+
+### Absorb scalars
+
+    absorb_scalars(sho, scalars)
+
+    Inputs:
+### Absorb elements
+
+### Squeeze scalars
+
+[SHA3] FIPS PUB 202, "SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions," August 2015. https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf

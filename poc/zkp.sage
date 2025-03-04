@@ -18,6 +18,18 @@ def prove_batchable(rng, label, statement, witness):
         Group.serialize_scalars(response)
     )
 
+
+def prove_batchable_1(rng, sp, h, witness):
+    (prover_state, commitment) = sp.prover_commit(rng, witness)
+    challenge, = h.absorb_elements(commitment).squeeze_scalars(1)
+    response = sp.prover_response(prover_state, challenge)
+
+    assert sp.verifier(commitment, challenge, response)
+    return (
+        Group.serialize_elements(commitment) +
+        Group.serialize_scalars(response)
+    )
+
 def verify_batchable(label, statement, proof):
     commitment_bytes = proof[: statement.commitment_bytes_len]
     commitment = Group.deserialize_elements(commitment_bytes)
@@ -86,7 +98,7 @@ class Morphism:
             image.append(Group.msm(coefficients, linear_combination.elements))
         return image
 
-class Equations:
+class GroupMorphismPreimage:
     def __init__(self):
         self.morphism = Morphism()
         self.image = []
@@ -104,7 +116,8 @@ class Equations:
         self.image.append(lhs)
 
     def allocate_scalars(self, n):
-        indices = [ScalarVar(i) for i in range(self.morphism.num_scalars, self.morphism.num_scalars + n)]
+        indices = [ScalarVar(i)
+                   for i in range(self.morphism.num_scalars, self.morphism.num_scalars + n)]
         self.morphism.num_scalars += n
         return indices
 
@@ -127,13 +140,35 @@ class SchnorrProof(SigmaProtocol):
         ]
 
     def verifier(self, commitment, challenge, response):
-        assert len(commitment) == self.statement.morphism.num_statements and len(response) == self.statement.morphism.num_scalars
+        assert len(commitment) == self.statement.morphism.num_statements
+        assert len(response) == self.statement.morphism.num_scalars
 
         expected = self.statement.morphism(response)
-        got = [commitment[i] + statement.image[i] * challenge
-        for i in range(self.statement.morphism.num_statements)]
+        got = [
+            commitment[i] + statement.image[i] * challenge
+            for i in range(self.statement.morphism.num_statements)
+        ]
 
-        return got == expected
+        # fail hard if the proof does not verify
+        assert got == expected
+        return True
+
+    def serialize_batchable(self, commitment, challenge, response):
+        return (
+            Group.serialize_elements(commitment) +
+            Group.serialize_scalars(response)
+        )
+
+    def deserialize_batchable(self, encoded):
+        commitment_bytes = encoded[: self.statement.commit_bytes_len]
+        commitment = Group.deserialize_elements(commitment_bytes)
+
+        response_bytes = encoded[self.statement.commit_bytes_len :]
+        response = Group.deserialize_scalars(response_bytes)
+
+        return (commitment, response)
+
+
 
 
 if __name__ == "__main__":
@@ -153,7 +188,7 @@ if __name__ == "__main__":
     X = Group.msm(witness, Gs[:2])
     Y = Group.msm(witness, Gs[2:4])
 
-    statement = Equations()
+    statement = GroupMorphismPreimage()
     [var_x, var_r] = statement.allocate_scalars(2)
     statement.append_equation(X, [(var_x, Gs[0]), (var_r, Gs[1])])
     statement.append_equation(Y, [(var_x, Gs[2]), (var_r, Gs[3])])
