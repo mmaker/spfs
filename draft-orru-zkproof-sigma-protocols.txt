@@ -295,7 +295,7 @@ struct Equations {
 
    Inputs:
 
-   - labels, a byte array
+   - label, a byte array
 
    Outputs:
 
