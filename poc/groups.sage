@@ -40,8 +40,21 @@ def OS2IP_le(octets, skip_assert=False):
         assert octets == I2OSP_le(ret, len(octets))
     return ret
 
+# Scalar: Zero + One + Div<Scalar> + Add<Scalar> + Sub<Scalar> + From<int> + Eq<Group> + Serialize + Deserialize
+
+class ScalarField:
+    def __init__(self, order):
+        self.F = GF(order)
+        self.order = order
+
+    def serialize(self):
+        raise NotImplementedError
+
+    @classmethod
+    def deserialize(cls, encoded):
+        raise NotImplementedError
+
 class Group(object):
-    # Impl ScalarField Class
     ScalarField = None
 
     def __init__(self, name):
@@ -109,6 +122,7 @@ class GroupNISTCurve(Group):
         self.H = H
         self.expander = expander
         self.field_bytes_length = int(ceil(len(self.p.bits()) / 8))
+        self.ScalarField = ScalarField(order)
 
     def generator(self):
         return self.G
