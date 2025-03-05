@@ -40,29 +40,32 @@ def OS2IP_le(octets, skip_assert=False):
         assert octets == I2OSP_le(ret, len(octets))
     return ret
 
-class ScalarField(GF):
+class ScalarField:
+
     def __init__(self, order):
-        GF.__init__(self, order)
+        self.field = GF(order)  # Delegate field operations to GF instance
         self.order = order
         self.field_bytes_length = int(ceil(len(self.order.bits()) / 8))
 
-    def byte_length(self):
+    def __getattr__(self, name):
+        return getattr(self.field, name)  # Delegate missing attributes
+
+    def scalar_byte_length(self):
         return int(self.field_bytes_length)
 
-    def serialize(self):
-        return I2OSP(self.F, self.byte_length())
+    def serialize_scalar(self, scalar):
+        assert(0 <= scalar < self.order)
+        return I2OSP(scalar, self.scalar_byte_length())
 
-    @classmethod
-    def deserialize(cls, encoded):
-        return cls.__init__(OS2IP(encoded).order())
+    def deserialize_scalar(self, encoded):
+        return OS2IP(encoded)
 
-    @classmethod
-    def serialize_scalars(cls, scalars):
-        return b"".join([scalar.serialize() for scalar in scalars])
+    def serialize_scalars(self, scalars):
+        return b"".join([self.serialize_scalar(scalar) for scalar in scalars])
 
     def deserialize_scalars(self, encoded):
         encoded_len = len(encoded)
-        scalar_len = self.byte_length()
+        scalar_len = self.scalar_byte_length()
         num_scalars, remainder = divmod(encoded_len, scalar_len)
         if remainder != 0:
             raise ValueError("invalid scalar length")

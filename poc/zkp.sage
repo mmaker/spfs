@@ -12,7 +12,7 @@ def prove_batchable(rng, label, statement, witness, group):
     assert sp.verifier(commitment, challenge, response)
     return (
         group.serialize_elements(commitment) +
-        group.serialize_scalars(response)
+        group.ScalarField.serialize_scalars(response)
     )
 
 
@@ -24,7 +24,7 @@ def prove_batchable_1(rng, sp, h, witness, group):
     assert sp.verifier(commitment, challenge, response)
     return (
         group.serialize_elements(commitment) +
-        group.serialize_scalars(response)
+        group.ScalarField.serialize_scalars(response)
     )
 
 def verify_batchable(label, statement, proof, group):
@@ -32,7 +32,7 @@ def verify_batchable(label, statement, proof, group):
     commitment = group.deserialize_elements(commitment_bytes)
 
     response_bytes = proof[statement.commit_bytes_len :]
-    response = group.deserialize_scalars(response_bytes)
+    response = group.ScalarField.deserialize_scalars(response_bytes)
 
     challenge, = Shake128GroupP384(label).absorb_elements(commitment).squeeze_scalars(1)
 
@@ -155,7 +155,7 @@ class SchnorrProof(SigmaProtocol):
     def serialize_batchable(self, commitment, challenge, response):
         return (
             self.group.serialize_elements(commitment) +
-            self.group.serialize_scalars(response)
+            self.group.ScalarField.serialize_scalars(response)
         )
 
     def deserialize_batchable(self, encoded):
@@ -163,6 +163,6 @@ class SchnorrProof(SigmaProtocol):
         commitment = self.group.deserialize_elements(commitment_bytes)
 
         response_bytes = encoded[self.statement.commit_bytes_len :]
-        response = self.group.deserialize_scalars(response_bytes)
+        response = self.group.ScalarField.deserialize_scalars(response_bytes)
 
         return (commitment, response)
