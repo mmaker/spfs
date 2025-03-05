@@ -19,7 +19,7 @@ setup:
 	cp h2c/poc/*.sage .
 
 test: pyfiles
-	sage test_arc.sage
+	sage test_zkp.sage
 
 vectors: pyfiles
 	@echo "Removing vectors folder, if present"
