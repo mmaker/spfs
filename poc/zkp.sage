@@ -31,10 +31,10 @@ def prove_batchable_1(rng, sp, h, witness):
     )
 
 def verify_batchable(label, statement, proof):
-    commitment_bytes = proof[: statement.commitment_bytes_len]
+    commitment_bytes = proof[: statement.commit_bytes_len]
     commitment = Group.deserialize_elements(commitment_bytes)
 
-    response_bytes = proof[statement.commitment_bytes_len :]
+    response_bytes = proof[statement.commit_bytes_len :]
     response = Group.deserialize_scalars(response_bytes)
 
     challenge, = Shake128GroupP384(label).absorb_elements(commitment).squeeze_scalars(1)
