@@ -40,8 +40,6 @@ def OS2IP_le(octets, skip_assert=False):
         assert octets == I2OSP_le(ret, len(octets))
     return ret
 
-# Scalar: Zero + One + Div<Scalar> + Add<Scalar> + Sub<Scalar> + From<int> + Eq<Group> + Serialize + Deserialize
-
 class ScalarField(GF):
     def __init__(self, order):
         GF.__init__(self, order)
@@ -94,13 +92,7 @@ class Group(object):
     def deserialize(self, encoded):
         raise NotImplementedError
 
-    def serialize_scalar(self, scalar):
-        raise NotImplementedError
-
     def element_byte_length(self):
-        raise NotImplementedError
-
-    def scalar_byte_length(self):
         raise NotImplementedError
 
     def hash_to_group(self, x):
