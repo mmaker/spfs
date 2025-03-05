@@ -46,7 +46,7 @@ class ScalarField(GF):
     def __init__(self, order):
         GF.__init__(self, order)
         self.order = order
-        self.field_bytes_length = int(ceil(len(self.p.bits()) / 8))
+        self.field_bytes_length = int(ceil(len(self.order.bits()) / 8))
 
     def byte_length(self):
         return int(self.field_bytes_length)
@@ -56,7 +56,22 @@ class ScalarField(GF):
 
     @classmethod
     def deserialize(cls, encoded):
-        return OS2IP(encoded)
+        return cls.__init__(OS2IP(encoded).order())
+
+    @classmethod
+    def serialize_scalars(cls, scalars):
+        return b"".join([scalar.serialize() for scalar in scalars])
+
+    def deserialize_scalars(self, encoded):
+        encoded_len = len(encoded)
+        scalar_len = self.byte_length()
+        num_scalars, remainder = divmod(encoded_len, scalar_len)
+        if remainder != 0:
+            raise ValueError("invalid scalar length")
+        return [
+            self.deserialize_scalar(encoded[i: i + scalar_len])
+            for i in range(0, encoded_len, scalar_len)
+        ]
 
 class Group(object):
     ScalarField = None
@@ -161,20 +176,6 @@ class GroupNISTCurve(Group):
 
     def serialize_elements(self, elements):
         return b"".join([self.serialize(element) for element in elements])
-
-    def serialize_scalars(self, scalars):
-        return b"".join([self.serialize_scalar(scalar) for scalar in scalars])
-
-    def deserialize_scalars(self, encoded):
-        encoded_len = len(encoded)
-        scalar_len = self.scalar_byte_length()
-        num_scalars, remainder = divmod(encoded_len, scalar_len)
-        if remainder != 0:
-            raise ValueError("invalid scalar length")
-        return [
-            self.deserialize_scalar(encoded[i: i + scalar_len])
-            for i in range(0, encoded_len, scalar_len)
-        ]
 
     def deserialize_elements(self, encoded):
         encoded_len = len(encoded)
