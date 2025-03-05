@@ -42,17 +42,17 @@ def OS2IP_le(octets, skip_assert=False):
 
 # Scalar: Zero + One + Div<Scalar> + Add<Scalar> + Sub<Scalar> + From<int> + Eq<Group> + Serialize + Deserialize
 
-class ScalarField:
-    def __init__(self, order, field_bytes_length):
-        self.F = GF(order)
+class ScalarField(GF):
+    def __init__(self, order):
+        GF.__init__(self, order)
         self.order = order
-        self.field_bytes_length = field_bytes_length
+        self.field_bytes_length = int(ceil(len(self.p.bits()) / 8))
 
-    def scalar_byte_length(self):
+    def byte_length(self):
         return int(self.field_bytes_length)
 
     def serialize(self):
-        return I2OSP(self.F, self.scalar_byte_length())
+        return I2OSP(self.F, self.byte_length())
 
     @classmethod
     def deserialize(cls, encoded):
