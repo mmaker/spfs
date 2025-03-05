@@ -40,6 +40,40 @@ def OS2IP_le(octets, skip_assert=False):
         assert octets == I2OSP_le(ret, len(octets))
     return ret
 
+class ScalarField:
+
+    def __init__(self, order):
+        self.field = GF(order)  # Delegate field operations to GF instance
+        self.order = order
+        self.field_bytes_length = int(ceil(len(self.order.bits()) / 8))
+
+    def __getattr__(self, name):
+        return getattr(self.field, name)  # Delegate missing attributes
+
+    def scalar_byte_length(self):
+        return int(self.field_bytes_length)
+
+    def serialize_scalar(self, scalar):
+        assert(0 <= scalar < self.order)
+        return I2OSP(scalar, self.scalar_byte_length())
+
+    def deserialize_scalar(self, encoded):
+        return OS2IP(encoded)
+
+    def serialize_scalars(self, scalars):
+        return b"".join([self.serialize_scalar(scalar) for scalar in scalars])
+
+    def deserialize_scalars(self, encoded):
+        encoded_len = len(encoded)
+        scalar_len = self.scalar_byte_length()
+        num_scalars, remainder = divmod(encoded_len, scalar_len)
+        if remainder != 0:
+            raise ValueError("invalid scalar length")
+        return [
+            self.deserialize_scalar(encoded[i: i + scalar_len])
+            for i in range(0, encoded_len, scalar_len)
+        ]
+
 class Group(object):
     ScalarField = None
 
@@ -61,13 +95,7 @@ class Group(object):
     def deserialize(self, encoded):
         raise NotImplementedError
 
-    def serialize_scalar(self, scalar):
-        raise NotImplementedError
-
     def element_byte_length(self):
-        raise NotImplementedError
-
-    def scalar_byte_length(self):
         raise NotImplementedError
 
     def hash_to_group(self, x):
@@ -105,6 +133,7 @@ class GroupNISTCurve(Group):
         self.H = H
         self.expander = expander
         self.field_bytes_length = int(ceil(len(self.p.bits()) / 8))
+        self.ScalarField = ScalarField(order)
 
     def generator(self):
         return self.G
@@ -140,27 +169,6 @@ class GroupNISTCurve(Group):
     def serialize_elements(self, elements):
         return b"".join([self.serialize(element) for element in elements])
 
-    def serialize_scalar(self, scalar):
-        assert(0 <= scalar < self.order())
-        return I2OSP(scalar, self.scalar_byte_length())
-
-    def serialize_scalars(self, scalars):
-        return b"".join([self.serialize_scalar(scalar) for scalar in scalars])
-
-    def deserialize_scalar(self, encoded):
-        return OS2IP(encoded)
-
-    def deserialize_scalars(self, encoded):
-        encoded_len = len(encoded)
-        scalar_len = self.scalar_byte_length()
-        num_scalars, remainder = divmod(encoded_len, scalar_len)
-        if remainder != 0:
-            raise ValueError("invalid scalar length")
-        return [
-            self.deserialize_scalar(encoded[i: i + scalar_len])
-            for i in range(0, encoded_len, scalar_len)
-        ]
-
     def deserialize_elements(self, encoded):
         encoded_len = len(encoded)
         element_len = self.element_byte_length()
@@ -174,9 +182,6 @@ class GroupNISTCurve(Group):
 
     def element_byte_length(self):
         return int(1 + self.field_bytes_length)
-
-    def scalar_byte_length(self):
-        return int(self.field_bytes_length)
 
     def hash_to_group(self, msg, dst):
         self.h2c_suite.expand._dst = dst
