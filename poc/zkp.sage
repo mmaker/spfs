@@ -5,41 +5,40 @@ from sagelib.arc_groups import G, GenG, GenH, hash_to_group
 from util import to_hex, to_bytes
 from sagelib.sho import Shake128GroupP384
 
-
-def prove_batchable(rng, label, statement, witness):
-    sp = SchnorrProof(statement)
+def prove_batchable(rng, label, statement, witness, group):
+    sp = SchnorrProof(statement, group)
     (prover_state, commitment) = sp.prover_commit(rng, witness)
     challenge, = Shake128GroupP384(label).absorb_elements(commitment).squeeze_scalars(1)
     response = sp.prover_response(prover_state, challenge)
 
     assert sp.verifier(commitment, challenge, response)
     return (
-        Group.serialize_elements(commitment) +
-        Group.serialize_scalars(response)
+        group.serialize_elements(commitment) +
+        group.serialize_scalars(response)
     )
 
 
-def prove_batchable_1(rng, sp, h, witness):
+def prove_batchable_1(rng, sp, h, witness, group):
     (prover_state, commitment) = sp.prover_commit(rng, witness)
     challenge, = h.absorb_elements(commitment).squeeze_scalars(1)
     response = sp.prover_response(prover_state, challenge)
 
     assert sp.verifier(commitment, challenge, response)
     return (
-        Group.serialize_elements(commitment) +
-        Group.serialize_scalars(response)
+        group.serialize_elements(commitment) +
+        group.serialize_scalars(response)
     )
 
-def verify_batchable(label, statement, proof):
+def verify_batchable(label, statement, proof, group):
     commitment_bytes = proof[: statement.commit_bytes_len]
-    commitment = Group.deserialize_elements(commitment_bytes)
+    commitment = group.deserialize_elements(commitment_bytes)
 
     response_bytes = proof[statement.commit_bytes_len :]
-    response = Group.deserialize_scalars(response_bytes)
+    response = group.deserialize_scalars(response_bytes)
 
     challenge, = Shake128GroupP384(label).absorb_elements(commitment).squeeze_scalars(1)
 
-    sp = SchnorrProof(statement)
+    sp = SchnorrProof(statement, group)
     return sp.verifier(commitment, challenge, response)
 
 
@@ -79,9 +78,10 @@ LinearCombination = namedtuple("LinearCombination", ["scalar_indices", "elements
 ProverState = namedtuple("ProverState", ["witness", "nonces"])
 
 class Morphism:
-    def __init__(self):
+    def __init__(self, group):
         self.linear_combinations = []
         self.num_scalars = 0
+        self.group = group
 
     def append(self, linear_combination: LinearCombination):
         self.linear_combinations.append(linear_combination)
@@ -95,17 +95,18 @@ class Morphism:
         image = []
         for linear_combination in self.linear_combinations:
             coefficients = [scalars[i] for i in linear_combination.scalar_indices]
-            image.append(Group.msm(coefficients, linear_combination.elements))
+            image.append(self.group.msm(coefficients, linear_combination.elements))
         return image
 
 class GroupMorphismPreimage:
-    def __init__(self):
-        self.morphism = Morphism()
+    def __init__(self, group):
+        self.morphism = Morphism(group)
         self.image = []
+        self.group = group
 
     @property
     def commit_bytes_len(self):
-        return self.morphism.num_statements * Group.element_byte_length()
+        return self.morphism.num_statements * self.group.element_byte_length()
 
     def append_equation(self, lhs, rhs):
         linear_combination = LinearCombination(
@@ -123,11 +124,12 @@ class GroupMorphismPreimage:
 
 
 class SchnorrProof(SigmaProtocol):
-    def __init__(self, statement):
+    def __init__(self, statement, group):
         self.statement = statement
+        self.group = group
 
     def prover_commit(self, rng, witness):
-        nonces = [Group.random_scalar(rng) for _ in range(self.statement.morphism.num_scalars)]
+        nonces = [self.group.random_scalar(rng) for _ in range(self.statement.morphism.num_scalars)]
         prover_state = ProverState(witness, nonces)
         commitment = self.statement.morphism(nonces)
         return (prover_state, commitment)
@@ -135,7 +137,7 @@ class SchnorrProof(SigmaProtocol):
     def prover_response(self, prover_state: ProverState, challenge):
         (witness, nonces) = prover_state
         return [
-            (nonces[i] + challenge * witness[i]) % Group.order()
+            (nonces[i] + challenge * witness[i]) % self.group.order()
             for i in range(self.statement.morphism.num_scalars)
         ]
 
@@ -145,7 +147,7 @@ class SchnorrProof(SigmaProtocol):
 
         expected = self.statement.morphism(response)
         got = [
-            commitment[i] + statement.image[i] * challenge
+            commitment[i] + self.statement.image[i] * challenge
             for i in range(self.statement.morphism.num_statements)
         ]
 
@@ -155,45 +157,15 @@ class SchnorrProof(SigmaProtocol):
 
     def serialize_batchable(self, commitment, challenge, response):
         return (
-            Group.serialize_elements(commitment) +
-            Group.serialize_scalars(response)
+            self.group.serialize_elements(commitment) +
+            self.group.serialize_scalars(response)
         )
 
     def deserialize_batchable(self, encoded):
         commitment_bytes = encoded[: self.statement.commit_bytes_len]
-        commitment = Group.deserialize_elements(commitment_bytes)
+        commitment = self.group.deserialize_elements(commitment_bytes)
 
         response_bytes = encoded[self.statement.commit_bytes_len :]
-        response = Group.deserialize_scalars(response_bytes)
+        response = self.group.deserialize_scalars(response_bytes)
 
         return (commitment, response)
-
-
-
-
-if __name__ == "__main__":
-    from sagelib.arc_groups import GroupP384
-    from sagelib.test_drng import TestDRNG
-
-    Group = GroupP384()
-    Gs = [hash_to_group(to_bytes("gen"), to_bytes(f"{i}")) for i in range(100)]
-
-    ## Schnorr proof example
-    ## proves that
-    # X = x0 * G  + x1 * H
-    # Y = x0 * G' + x1 * H'
-    rng = TestDRNG("test vector seed".encode('utf-8'))
-
-    witness = [Group.random_scalar(rng) for i in range(2)]
-    X = Group.msm(witness, Gs[:2])
-    Y = Group.msm(witness, Gs[2:4])
-
-    statement = GroupMorphismPreimage()
-    [var_x, var_r] = statement.allocate_scalars(2)
-    statement.append_equation(X, [(var_x, Gs[0]), (var_r, Gs[1])])
-    statement.append_equation(Y, [(var_x, Gs[2]), (var_r, Gs[3])])
-
-    #print("Schnorr proof passed")
-    proof = prove_batchable(rng, b"test", statement, witness)
-    print(f"Proof: {to_hex(proof)}")
-    assert verify_batchable(b"test", statement, proof)
