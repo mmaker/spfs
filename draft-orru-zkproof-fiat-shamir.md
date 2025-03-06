@@ -50,8 +50,8 @@ On a high level, it consists of three main components:
 
 The core actions supported are:
 
-- `Absorb` indicates a sequence of len elements in input
-- `Squeeze` indicates an amount len of output to be produced
+- `absorb` indicates a sequence of `len` elements in input
+- `squeeze` indicates an amount `len` of output to be produced
 
 # The API
 

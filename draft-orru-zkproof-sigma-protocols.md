@@ -45,7 +45,8 @@ This document describes Sigma protocols, a secure, general-purpose non-interacti
 
 # Introduction
 
-A Sigma Protocol is a simple zero-knowledge proof of knowledge. Any sigma protocols must define three objects:
+A Sigma Protocol is a simple zero-knowledge proof of knowledge.
+Any sigma protocols must define three objects:
 
 - A commitment, sometimes also called nonce. This message is computed by the prover.
 - A challenge, computed using the Fiat-Shamir transformation using a hash function.
@@ -53,36 +54,44 @@ A Sigma Protocol is a simple zero-knowledge proof of knowledge. Any sigma protoc
 
 A sigma protocol allows to convince a **verifier** of the knowledge of a secret **witness** satisfying a **statement**.
 
-## Generic interface
+# Public functions
 
-A sigma protocol is an interface exposing the following functions:
+A sigma protocol provides the following two public functions.
+For how to implement these function in prime-order groups and elliptic curves, see {{group-prove}} and {{group-verify}}.
 
-    def prove_short(label, statement, witness):
-        sp = SigmaProtocol.new(statement)
-        (prover_state, commitment) = sp.prover_commmit(witness)
-        challenge = SHO
-            .init(label)
-            .absorb(commitment)
-            .squeeze(1)
+## Proving function
 
-        response = sp.prover_response(commitment, challenge)
-        return scalar_to_bytes(challenge) + scalar_to_bytes(response)
+    prove(domain_separator, statement, witness, rng)
 
-    def prove_batchable(label, statement, witness):
-        sp = SigmaProtocol.new(statement)
-        (prover_state, commitment) = sp.prover_commit(witness)
-        challenge = SHO
-            .init(label)
-            .absorb(commitment)
-            .squeeze(1)
-        response = sp.prover_response(commitment, challenge)
-        return point_to_bytes(commitment) + scalar_to_bytes(response)
+    Inputs:
+0=
+    - domain_separator, a unique 32-bytes array uniquely indicating the protocol and the session being proven
+    - statement, the instance being proven
+    - witness, the witness for the given statement
+    - rng, a random number generator
 
-    def verify_batchable(label, statement, proof):
-        sp = SigmaProtocol.new(statement)
-        commitment = read_group_elements(proof)
+    Outputs:
 
-Internally, each sigma protocol implements the following methods.
+    - proof, a byte array.
+
+## Verification
+
+    verify(domain_separator, statement, proof)
+
+    Inputs:
+
+    - domain_separator, a unique 32-bytes array uniquely indicating the protocol and the session being proven
+    - statement, the instance being proven
+    - proof, a byte array containing the cryptographic proof
+
+
+    Outputs:
+
+    - the verification bit
+
+## Core interface
+
+The public functions are obtained relying on an internal structure containing the definition of a sigma protocol.
 
     class SigmaProtocol:
        def new(instance: Statement) -> SigmaProtocol
@@ -113,44 +122,91 @@ The final two algorithms describe the **zero-knowledge simulator** and are optio
 
 The abstraction `SigmaProtocol` allows implementing different types of statements and combiners of those, such as OR statements, validity of t-out-of-n statements, and more.
 
-# Σ-protocols over prime-order groups
+# Sigma protocols over prime-order groups
 
-The following sub-section present concrete instantiations of Σ-protocols over prime-order groups such as elliptic curves.
-Traditionally, Σ-protocols are defined in Camenish-Stadtler notation as (for example):
+The following sub-section present concrete instantiations of sigma protocols over prime-order groups such as elliptic curves.
+Traditionally, sigma protocols are defined in Camenish-Stadtler notation as (for example):
 
-    VRF(A, B, G, H) = PoK{
+    DLEQ(G, H, X, Y) = PoK{
       (x):        // Secret variables
-      A = x * B,  // Statements to prove
-      G = x * H
+      X = x * G,  // Statements to prove
+      Y = x * H
     }
 
-This section describes how to build and prove statements of this form programmatically.
+stating that the proof name is "DLEQ", the public information (the **instance**) consists of the group elements `(G, X, H, Y)` denoted in upper-case, the private information (the **witness**) consists of the scalar `x`, and that the constraints (the equations) that need to be proven are
+`x * G  = X` and `x * H = Y`.
+
+## Schnorr proofs
+
+### Public proving function {#group-prove}
+
+The proving function demands to instantiate a statement and a witness (as in {{witness}})
+
+    def prove(domain_separator, statement, witness, rng):
+
+    Inputs:
+
+    - domain_separator, a 32-bytes array that uniquely describes the protocol
+    - statement, the instance being proven
+    - witness, the secret prover's witness.
+
+    Parameters:
+
+    - SHO: A hash object implementing `absorb_elements` and `squeeze_scalars`
+
+    1. sp = SchnorrProof(statement, group)
+    2. (prover_state, commitment) = sp.prover_commit(rng, witness)
+    3. challenge, = SHO(label).absorb_elements(commitment).squeeze_scalars(1)
+    4. response = sp.prover_response(prover_state, challenge)
+    5. assert sp.verifier(commitment, challenge, response)    # optional
+    6. return (group.serialize_elements(commitment) + group.serialize_scalars(response))
+
+
+Line 5 is optional, but implementations wanting to perform input validation for the witness SHOULD adopt it.
+
+### Public verification function {#group-verify}
+
+    verify(domain_separator, statement, proof)
+
+    Inputs:
+
+    - domain_separator, a unique 32-bytes array uniquely indicating the protocol and the session being proven
+    - statement, the instance being proven
+    - proof, a byte array containing the cryptographic proof
 
 ## Group abstraction
 
 Because of their dominance, the presentation in the following focuses on proof goals over elliptic curves, therefore leveraging additive notation. For prime-order
 subgroups of residue classes, all notation needs to be changed to multiplicative, and references to elliptic curves (e.g., curve) need to be replaced by their respective
 counterparts over residue classes.
-We therefore assume two objects are available to the programmer:
-
-    Group: Zero + Add<Group> + Sub<Group> + Mul<Scalar> + From<int> + Eq<Group> + Serialize + Deserialize
-    Scalar: Zero + One + Div<Scalar> + Add<Scalar> + Sub<Scalar> + From<int> + Eq<Group> + Serialize + Deserialize
 
 We detail the functions that can be invoked on these objects. Example choices can be found in {{ciphersuites}}.
 
 ### Group
 
+- `identity()`, returns the neutral element in the group.
+- `generator()`, returns the generator of the prime-order elliptic-curve subgroup used for cryptographic operations.
 - `order()`: Outputs the order of the group `p`.
-- `random()`: outputs a random element
-- `serialize([Group; N])`: serializes a list of group elements and returns a canonical byte array `buf` of fixed length `Ng * N`.
-- `deserialize(buf)`: Attempts to map a byte array `buf` of size `Ng * N` into `[Group; N]`, and fails if the input is not the valid canonical byte representation of an element of the group. This function can raise a DeserializeError if deserialization fails.
+- `random()`: outputs a random element in the group.
+- `serialize(elements: [Group; N])`: serializes a list of group elements and returns a canonical byte array `buf` of fixed length `Ng * N`.
+- `deserialize(buffer)`: attempts to map a byte array `buffer` of size `Ng * N` into `[Group; N]`, and fails if the input is not the valid canonical byte representation of an element of the group. This function can raise a DeserializeError if deserialization fails.
+- `add(element: Group)`: implements elliptic curve addition for the two group elements.
+- `equal(element: Group)`, returns `true` if the two elements are the same and false` otherwise.
+- `scalar_mul(scalar: Scalar)`, implements scalar multiplication for a group element by a scalar.
+
+Functions such as `add`, `equal`, and `scalar_mul` SHOULD be implemented using operator overloading whenever possible.
 
 ### Scalar
 
+- `identity()`: outputs the (additive) identity element in the scalar field.
+- `add(scalar: Scalar)`: implements field addition for the elements in the field
+- `mult(scalar: Scalar)`, implements field multiplication
 - `random()`: outputs a random element
-- `**serialize**([Scalar; N])`: serializes a list of scalars and returns their canonical representation of fixed length `Ns * N`.
+- `serialize(scalars: [Scalar; N])`: serializes a list of scalars and returns their canonical representation of fixed length `Ns * N`.
 
-## Witness representation
+Functions such as `add`, `equal`, and `scalar_mul` SHOULD be implemented using operator overloading whenever possible.
+
+## Witness representation {#witness}
 
 A witness is simply a list of `num_scalars` elements.
 
@@ -354,27 +410,6 @@ We describe below the prover's wrapping function.
       sp = SigmaProtocol.new(statement)
       commitment = read_group_elements(proof)
 
-## Nonce and challenge derivation
-
-Two types of randomness are needed for a sigma protocol:
-
-1. A nonce seeding the randomness used to produce the commitment of the first round of the protocol
-2. A challenge representing the verifier's public random coin.
-
-The challenge of a Schnorr proof is derived with
-
-    challenge = sho.init(iv).absorb_group_elt(commitment).squeeze_scalar(1)
-
-This can be generated with:
-
-    nonce = sho.init(iv)
-               .absorb_bytes(random)
-               .ratchet()
-               .absorb_scalars(witness)
-               .squeeze_scalars(cs.num_scalars)
-
-The `iv`, which must properly separate the application and the statement being proved, is described below.
-
 ### Statement generation
 
 Let `H` be a hash object. The statement is encoded in a stateful hash object as follows.
@@ -427,4 +462,4 @@ This ciphersuite uses P-384 {{NISTCurves}} for the Group.
 # Acknowledgments
 {:numbered ="false"}
 
-Jan Bobolz, Stephan Krenn, Mary Maller, Ivan Visconti, Yuwen Zhang.
+The authors thank Jan Bobolz, Stephan Krenn, Mary Maller, Ivan Visconti, Yuwen Zhang for reviewing a previous edition of this specification.

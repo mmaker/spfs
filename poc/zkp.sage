@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-
 from collections import namedtuple
-from sagelib.arc_groups import G, GenG, GenH, hash_to_group
-from util import to_hex, to_bytes
+
 from sagelib.sho import Shake128GroupP384
 
 def prove_batchable(rng, label, statement, witness, group):
@@ -43,7 +41,6 @@ def verify_batchable(label, statement, proof, group):
 
 
 # the combiner for arbitrary statements
-
 class SigmaProtocol(ABC):
     @abstractmethod
     def __init__(self, statement):
