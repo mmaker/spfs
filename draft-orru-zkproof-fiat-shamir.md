@@ -168,7 +168,6 @@ Where the function `scalar_to_bytes` is defined in {#notation}
     2.     scalar_bytes = sho.squeeze_bytes(field_bytes_length + 16)
     3.     scalars.append(bytes_to_scalar_mod_order(scalar_bytes))
 
-
 # Notation and Terminology {#notation}
 
 For an elliptic curve, we consider two fields, the coordinate fields, which indicates the field over which the elliptic curve equation is defined, and the scalar field, over which the scalar operations are performed.

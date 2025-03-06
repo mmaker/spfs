@@ -82,6 +82,9 @@ class Group(object):
     def scalar_mult(self, x, y):
         raise NotImplementedError
 
+    def random(self, rng):
+        return self.generator() * self.random_scalar(rng)
+
     def __str__(self):
         return self.name
 
