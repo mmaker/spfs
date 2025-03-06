@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-04T01:10:54.740244+00:00",
+  "timestamp": "2025-03-06T01:10:46.513901+00:00",
   "repo": "mmaker/spfs",
   "labels": [
     {
@@ -129,7 +129,145 @@
       "updatedAt": "2025-03-03T01:14:39Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDONyiw_86snh1H",
+      "title": "Support for short proofs",
+      "url": "https://github.com/mmaker/spfs/issues/8",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Right now the non-interactive sigma protocol proving function outputs batchable proofs `(commitment, response)` \nwhich (I think) require point validation and are generally larger than short proofs of the form `(challenge, response)`.\n\nThis issue is to track the addition of a `short_prove` and `short_verify function`",
+      "createdAt": "2025-03-05T03:37:32Z",
+      "updatedAt": "2025-03-05T03:48:18Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 9,
+      "id": "I_kwDONyiw_86sniRo",
+      "title": "Support messages as part of the zk proof",
+      "url": "https://github.com/mmaker/spfs/issues/9",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "it is typical in signatures of knoweldge and sometimes in zk proofs to add a string label to a zkp, which is plugged into the fiat-shamir transformation. After a chat with trevor i have the impression that for him the way to go would be \n\n```\nchallenge = SHAKE128(description || message || commitment)\n```\n\nso i think we should find a way to add the message to the domain separator, if needed.",
+      "createdAt": "2025-03-05T03:39:17Z",
+      "updatedAt": "2025-03-05T03:39:17Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDONyiw_86snkVK",
+      "title": "Support deterministic nonce generation",
+      "url": "https://github.com/mmaker/spfs/issues/10",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "It is good practice in the signature world to re-seed the operating system randomness with the signing key. One such example is [RFC6979](https://datatracker.ietf.org/doc/html/rfc6979). This requires some care because (1) we want to preprocess the information with the challenge generation, (2) we don't want to expose the witness to side-channel attacks, and (3) make the spec more complicated than it needs to be. \n\nFor the case of sigma protocols, something simple as \n```\nnonce     = SHAKE128(description || message || random || PAD || witness)\nchallenge = SHAKE128(description || message || commitment)\n```\n\nwould be ideal, but the problem comes in when thinking of multi-round protocols, each of which might requires extra randomness in the middle of the protocol. \n\nThe approach used in [Nimue](https://github.com/mmaker/nimue) is to have the NARG prover state also hold a private sponge, which is ratcheted seeded with operating system randomness every time an absorb is performed. This seems OK but wasteful.\nA better alternative would be to expect the interactive (ZK) prover to take as input an rng, and seed that rng with the witness and some os randomness once and for all. The downside of this approach is that recovering the initial seed will break the whole protocol, but this does not seem to be such a problem? all in all, there is not much academic literature about leakage in zk proof of these sort.",
+      "createdAt": "2025-03-05T03:47:21Z",
+      "updatedAt": "2025-03-05T03:47:58Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 6,
+      "id": "PR_kwDONyiw_86NWhMS",
+      "title": "Isolate Scalar struct from Group",
+      "url": "https://github.com/mmaker/spfs/pull/6",
+      "state": "OPEN",
+      "author": "ChihChengLiang",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "We attempt to fix #2 with this PR.\r\n\r\nTest\r\n```\r\ncd poc\r\nmake\r\nsage test_zkp.sage \r\n```\r\n\r\n",
+      "createdAt": "2025-03-04T17:44:23Z",
+      "updatedAt": "2025-03-05T09:59:03Z",
+      "baseRepository": "mmaker/spfs",
+      "baseRefName": "main",
+      "baseRefOid": "cb3328747b1325e326eff78b29dc02902767525a",
+      "headRepository": "ChihChengLiang/spfs",
+      "headRefName": "scalar-struct",
+      "headRefOid": "c5e69dacd4e9d5cc4d2c9a9affe9346941937619",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "nice job, but there's still some things that are not handled: \r\n\r\n- `hash_to_scalar` is part of the description https://github.com/ChihChengLiang/spfs/blob/scalar-struct/poc/groups.sage#L190  \r\n- the change needs to propagate to the elliptic curve implementations\r\nIn particular, https://github.com/ChihChengLiang/spfs/blob/scalar-struct/poc/groups.sage#L246 scalar serialization for NIST curves is still part of `NISTGroup`. \r\nSame for https://github.com/ChihChengLiang/spfs/blob/scalar-struct/poc/groups.sage#L287. ",
+          "createdAt": "2025-03-05T09:59:01Z",
+          "updatedAt": "2025-03-05T09:59:01Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDONyiw_86ekViP",
+          "commit": {
+            "abbreviatedOid": "c5e69da"
+          },
+          "author": "ChihChengLiang",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "I commented on the decision to use composition (wrapping GF) rather than inheritance (subclass GF)",
+          "createdAt": "2025-03-05T08:30:21Z",
+          "updatedAt": "2025-03-05T08:32:12Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Eventually I gave up the inheritance approach due to the complexity.\r\nGF is not a simple class. It is created using a [UniqueFactory](https://doc.sagemath.org/html/en/reference//structure/sage/structure/factory.html#sage.structure.factory.UniqueFactory). To initialize it properly, we need __new__ instead of __init__, which causing a series of new complexity.\r\n\r\n\r\n",
+              "createdAt": "2025-03-05T08:30:21Z",
+              "updatedAt": "2025-03-05T08:32:12Z"
+            },
+            {
+              "originalPosition": 12,
+              "body": "We use the `__getattr__` to get all the GF properties and methods.",
+              "createdAt": "2025-03-05T08:30:49Z",
+              "updatedAt": "2025-03-05T08:32:12Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDONyiw_86NZM5A",
+      "title": "poc work (draft)",
+      "url": "https://github.com/mmaker/spfs/pull/7",
+      "state": "MERGED",
+      "author": "cathieyun",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-05T00:46:33Z",
+      "updatedAt": "2025-03-05T03:35:30Z",
+      "baseRepository": "mmaker/spfs",
+      "baseRefName": "main",
+      "baseRefOid": "250935630ea8f7e70366d786ef9a970fc902e3ea",
+      "headRepository": "mmaker/spfs",
+      "headRefName": "cathie/poc-fixups",
+      "headRefOid": "19f988cc5b0b1fa79fce3785c86273ac3c39e73a",
+      "closedAt": "2025-03-05T03:35:30Z",
+      "mergedAt": "2025-03-05T03:35:30Z",
+      "mergedBy": "mmaker",
+      "mergeCommit": {
+        "oid": "cb3328747b1325e326eff78b29dc02902767525a"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }
