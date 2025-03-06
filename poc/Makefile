@@ -26,7 +26,7 @@ vectors: pyfiles
 	@rm -rf vectors
 	@echo "Creating vectors folder"
 	@mkdir -p vectors
-	sage test_arc.sage
+	sage test_zkp.sage
 
 .PHONY: clean
 clean:

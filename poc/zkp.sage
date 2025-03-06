@@ -10,11 +10,8 @@ def prove_batchable(rng, label, statement, witness, group):
     response = sp.prover_response(prover_state, challenge)
 
     assert sp.verifier(commitment, challenge, response)
-    return (
-        group.serialize_elements(commitment) +
-        group.serialize_scalars(response)
-    )
-
+    batched_proof = (group.serialize_elements(commitment) + group.serialize_scalars(response))
+    return batched_proof
 
 def prove_batchable_1(rng, sp, h, witness, group):
     (prover_state, commitment) = sp.prover_commit(rng, witness)
