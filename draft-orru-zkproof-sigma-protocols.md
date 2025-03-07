@@ -355,11 +355,28 @@ This defines the object `SchnorrProof`. The initialization function takes as inp
 
 ## Example: DLEQ proofs
 
-
 A DLEQ proof proves a statement:
+
+        DLEQ(G, H, X, Y) = PoK{(x): X = x * G, Y = x * H}
+
+Given group elements `G`, `H` and `X`, `Y` such that `x * G = X` and `x * H = Y`, then the statement is generated as:
+
+    1. statement = GroupMorphismPreimage()
+    2. [var_x] = statement.allocate_scalars(1)
+    3. statement.append_equation(X, [(var_x, G)])
+    4. statement.append_equation(Y, [(var_x, H)])
 
 ## Example: Pedersen commitments
 
+A representation proof proves a statement
+
+        REPR(G, H, C) = PoK{(x, r): C = x * G + r * H}
+
+Given group elements `G`, `H` such that `C = x * G + r * H`, then the statement is generated as:
+
+    statement = GroupMorphismPreimage()
+    var_x, var_r = statement.allocate_scalars(2)
+    statement.append_equation(C, [(var_x, G), (var_r, H)])
 
 ### Verifier procedure
 

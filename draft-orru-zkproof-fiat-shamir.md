@@ -196,6 +196,5 @@ The following functions and notation are used throughout the document.
 
     field_bytes_length, the number of bytes to represent the scalar element, equal to `ceil(log2(field.order()))`.
 
-
     1. byte = 2 if sgn0(element.y) == 0 else 3
     2. return I2OSP(byte, 1) + I2OSP(x, field_bytes_length)
