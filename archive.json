@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-06T01:10:46.513901+00:00",
+  "timestamp": "2025-03-09T01:01:49.243295+00:00",
   "repo": "mmaker/spfs",
   "labels": [
     {
@@ -87,16 +87,24 @@
       "id": "I_kwDONyiw_86sQM3f",
       "title": "Publish proof-of-concept implementation",
       "url": "https://github.com/mmaker/spfs/issues/3",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "mmaker",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "An ideal proof-of-concept implementation should contain 3 examples: \n- DLEQ proofs\n- proofs of ElGamal encryption\n- Schnorr proof of knowledge of a secret key",
       "createdAt": "2025-03-03T01:11:46Z",
-      "updatedAt": "2025-03-03T01:11:46Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-03-06T08:55:27Z",
+      "closedAt": "2025-03-06T08:55:27Z",
+      "comments": [
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "Done",
+          "createdAt": "2025-03-06T08:55:27Z",
+          "updatedAt": "2025-03-06T08:55:27Z"
+        }
+      ]
     },
     {
       "number": 4,
@@ -192,10 +200,10 @@
       "labels": [],
       "body": "We attempt to fix #2 with this PR.\r\n\r\nTest\r\n```\r\ncd poc\r\nmake\r\nsage test_zkp.sage \r\n```\r\n\r\n",
       "createdAt": "2025-03-04T17:44:23Z",
-      "updatedAt": "2025-03-05T09:59:03Z",
+      "updatedAt": "2025-03-06T08:52:56Z",
       "baseRepository": "mmaker/spfs",
       "baseRefName": "main",
-      "baseRefOid": "cb3328747b1325e326eff78b29dc02902767525a",
+      "baseRefOid": "725e5a7ae58f471fb6e9360baabf97a21c3af745",
       "headRepository": "ChihChengLiang/spfs",
       "headRefName": "scalar-struct",
       "headRefOid": "c5e69dacd4e9d5cc4d2c9a9affe9346941937619",
@@ -266,6 +274,32 @@
       "mergeCommit": {
         "oid": "cb3328747b1325e326eff78b29dc02902767525a"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDONyiw_86Nr1ir",
+      "title": "Assemble proof test vectors (WIP)",
+      "url": "https://github.com/mmaker/spfs/pull/11",
+      "state": "OPEN",
+      "author": "cathieyun",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-06T19:36:54Z",
+      "updatedAt": "2025-03-06T19:36:54Z",
+      "baseRepository": "mmaker/spfs",
+      "baseRefName": "main",
+      "baseRefOid": "725e5a7ae58f471fb6e9360baabf97a21c3af745",
+      "headRepository": "mmaker/spfs",
+      "headRefName": "cathie/testvectors",
+      "headRefOid": "f0adea84aedce8c3b2b7cb89ac65084b33ab1777",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
