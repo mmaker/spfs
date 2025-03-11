@@ -2,7 +2,7 @@
 # vim: syntax=python
 
 from sagelib.arc_groups import GroupP384, hash_to_group
-from sagelib.zkp import GroupMorphismPreimage, prove_batchable, verify_batchable
+from sagelib.zkp import GroupMorphismPreimage, prove, verify
 from sagelib.test_drng import TestDRNG
 from util import to_hex, to_bytes
 from sagelib.sho import Shake128GroupP384
@@ -25,9 +25,9 @@ def discrete_logarithm(path="vectors"):
     [var_x] = statement.allocate_scalars(1)
     statement.append_equation(X, [(var_x, G)])
 
-    proof = prove_batchable(rng, b"test", statement, [x], group)
+    proof = prove(rng, b"test", statement, [x], group)
     print(f"Proof: {to_hex(proof)}")
-    assert verify_batchable(b"test", statement, proof, group)
+    assert verify(b"test", statement, proof, group)
 
 def dleq(path="vectors"):
     """
@@ -49,9 +49,9 @@ def dleq(path="vectors"):
     statement.append_equation(X, [(var_x, G)])
     statement.append_equation(Y, [(var_x, H)])
 
-    proof = prove_batchable(rng, b"test", statement, [x], group)
+    proof = prove(rng, b"test", statement, [x], group)
     print(f"Proof: {to_hex(proof)}")
-    assert verify_batchable(b"test", statement, proof, group)
+    assert verify(b"test", statement, proof, group)
 
 
 def pedersen_commitment(path="vectors"):
@@ -71,9 +71,9 @@ def pedersen_commitment(path="vectors"):
     statement = GroupMorphismPreimage(group)
     var_x, var_r = statement.allocate_scalars(2)
     statement.append_equation(C, [(var_x, G), (var_r, H)])
-    proof = prove_batchable(rng, b"test", statement, [x, r], group)
+    proof = prove(rng, b"test", statement, [x, r], group)
     print(f"Proof: {to_hex(proof)}")
-    assert verify_batchable(b"test", statement, proof, group)
+    assert verify(b"test", statement, proof, group)
 
 
 
@@ -98,9 +98,9 @@ def pedersen_commitment_dleq(path="vectors"):
     statement.append_equation(Y, [(var_x, Gs[2]), (var_r, Gs[3])])
 
     # Test batched proof
-    batched_proof = proof = prove_batchable(rng, b"test", statement, witness, group)
+    batched_proof = proof = prove(rng, b"test", statement, witness, group)
     print(f"Proof: {to_hex(batched_proof)}")
-    assert verify_batchable(b"test", statement, batched_proof, group)
+    assert verify(b"test", statement, batched_proof, group)
 
 
 def main():
