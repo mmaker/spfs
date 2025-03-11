@@ -123,7 +123,7 @@ class Group(object):
         raise NotImplementedError
 
     def random(self, rng):
-        return self.generator() * self.random_scalar(rng)
+        return self.generator() * self.ScalarField.random_scalar(rng)
 
     def __str__(self):
         return self.name
