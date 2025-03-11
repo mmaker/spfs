@@ -40,7 +40,7 @@ def discrete_logarithm(vectors):
     """
     rng = TestDRNG("test vector seed".encode('utf-8'))
     G = group.generator()
-    x = group.random_scalar(rng)
+    x = group.ScalarField.random(rng)
     X = G * x
 
     statement = GroupMorphismPreimage(group)
@@ -68,7 +68,7 @@ def dleq(vectors):
     rng = TestDRNG("test vector seed".encode('utf-8'))
     G = group.generator()
     H = group.random(rng)
-    x = group.random_scalar(rng)
+    x = group.ScalarField.random(rng)
     X = G * x
     Y = H * x
 
@@ -97,8 +97,8 @@ def pedersen_commitment(vectors):
     rng = TestDRNG("test vector seed".encode('utf-8'))
     G = group.generator()
     H = group.random(rng)
-    x = group.random_scalar(rng)
-    r = group.random_scalar(rng)
+    x = group.ScalarField.random(rng)
+    r = group.ScalarField.random(rng)
 
     C = G * x + H * r
     statement = GroupMorphismPreimage(group)
@@ -126,7 +126,7 @@ def pedersen_commitment_dleq(vectors):
 
     rng = TestDRNG("test vector seed".encode('utf-8'))
 
-    witness = [group.random_scalar(rng) for i in range(2)]
+    witness = [group.ScalarField.random(rng) for i in range(2)]
     X = group.msm(witness, generators[:2])
     Y = group.msm(witness, generators[2:4])
 

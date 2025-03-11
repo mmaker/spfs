@@ -13,4 +13,6 @@ def hash_to_scalar(x, info):
     dst = to_bytes("HashToScalar-") + to_bytes(context_string) + info
     return G.hash_to_scalar(x, dst)
 
+GenG = G.generator()
+GenH = hash_to_group(G.serialize([GenG]), to_bytes("generatorH"))
 Gs = [hash_to_group(to_bytes("gen"), to_bytes(f"{i}")) for i in range(100)]
