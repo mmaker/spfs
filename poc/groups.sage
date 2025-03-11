@@ -53,6 +53,16 @@ class ScalarField:
     def scalar_byte_length(self):
         return int(self.field_bytes_length)
 
+
+class NISTCurveScalarField(ScalarField):
+    def __init__(self, order, F, L, H, expander, k):
+        ScalarField.__init__(self, order)
+        self.m = F.degree()
+        self.L = L
+        self.k = k
+        self.H = H
+        self.expander = expander
+
     def serialize_scalar(self, scalar):
         assert(0 <= scalar < self.order)
         return I2OSP(scalar, self.scalar_byte_length())
@@ -73,6 +83,11 @@ class ScalarField:
             self.deserialize_scalar(encoded[i: i + scalar_len])
             for i in range(0, encoded_len, scalar_len)
         ]
+
+    def hash_to_scalar(self, msg, dst):
+        expander = self.expander(dst, self.H, self.k)
+        return hash_to_field(msg, 1, self.order, self.m, self.L, expander)[0][0]
+
 
 class Group(object):
     ScalarField = None
@@ -130,13 +145,8 @@ class GroupNISTCurve(Group):
         self.group_order = order
         self.h2c_suite = suite
         self.G = EC(F(gx), F(gy))
-        self.m = F.degree()
-        self.L = L
-        self.k = k
-        self.H = H
-        self.expander = expander
         self.field_bytes_length = int(ceil(len(self.p.bits()) / 8))
-        self.ScalarField = ScalarField(order)
+        self.ScalarField = NISTCurveScalarField(order, F, L, H, expander, k)
 
     def generator(self):
         return self.G
@@ -189,10 +199,6 @@ class GroupNISTCurve(Group):
     def hash_to_group(self, msg, dst):
         self.h2c_suite.expand._dst = dst
         return self.h2c_suite(msg)
-
-    def hash_to_scalar(self, msg, dst):
-        expander = self.expander(dst, self.H, self.k)
-        return hash_to_field(msg, 1, self.order(), self.m, self.L, expander)[0][0]
 
     def scalar_mult(self, x, y):
         return x * y
