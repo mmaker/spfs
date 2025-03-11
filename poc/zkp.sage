@@ -114,7 +114,7 @@ class SchnorrProof(SigmaProtocol):
         self.group = group
 
     def prover_commit(self, rng, witness):
-        nonces = [self.group.ScalarField.random_scalar(rng) for _ in range(self.statement.morphism.num_scalars)]
+        nonces = [self.group.ScalarField.random(rng) for _ in range(self.statement.morphism.num_scalars)]
         prover_state = ProverState(witness, nonces)
         commitment = self.statement.morphism(nonces)
         return (prover_state, commitment)

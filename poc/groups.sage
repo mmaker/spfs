@@ -56,7 +56,7 @@ class Scalar(ABC):
         return int(cls.field_bytes_length)
 
     @classmethod
-    def random_scalar(cls, rng):
+    def random(cls, rng):
         return cls.field(rng.randint(1, cls.order - 1))
 
     @classmethod
@@ -142,8 +142,9 @@ class Group(ABC):
     def element_byte_length(self):
         raise NotImplementedError
 
+    @classmethod
     @abstractmethod
-    def hash_to_group(self, x):
+    def hash_to_group(cls, x):
         raise NotImplementedError
 
     @abstractmethod
@@ -151,7 +152,7 @@ class Group(ABC):
         raise NotImplementedError
 
     def random(self, rng):
-        return self.generator() * self.ScalarField.random_scalar(rng)
+        return self.generator() * self.ScalarField.random(rng)
 
     def __str__(self):
         return self.name
@@ -273,28 +274,28 @@ class GroupRistretto255(Group):
         Group.__init__(self, "ristretto255")
         self.L = 48
         self.field_bytes_length = 32
-        self.ScalarField = Ristretto255ScalarField(Ed25519Point().order)
+        self.ScalarField = Ristretto255ScalarField(Ed25519Point.order)
 
     def generator(self):
-        return Ed25519Point().base()
+        return Ed25519Point.base()
 
     def order(self):
-        return Ed25519Point().order
+        return Ed25519Point.order
 
     def identity(self):
-        return Ed25519Point().identity()
+        return Ed25519Point.identity()
 
     def serialize(self, element):
         return element.encode()
 
     def deserialize(self, encoded):
-        return Ed25519Point().decode(encoded)
+        return Ed25519Point.decode(encoded)
 
     def element_byte_length(self):
         return self.field_bytes_length
 
     def hash_to_group(self, msg, dst):
-        return Ed25519Point().hash_to_group(msg, dst)
+        return Ed25519Point.hash_to_group(msg, dst)
 
     def scalar_mult(self, x, y):
         return x * y
@@ -316,28 +317,28 @@ class GroupDecaf448(Group):
         Group.__init__(self, "decaf448")
         self.L = 84
         self.field_bytes_length = 56
-        self.ScalarField = Decaf448ScalarField(Ed448GoldilocksPoint().order)
+        self.ScalarField = Decaf448ScalarField(Ed448GoldilocksPoint.order)
 
     def generator(self):
-        return Ed448GoldilocksPoint().base()
+        return Ed448GoldilocksPoint.base()
 
     def order(self):
-        return Ed448GoldilocksPoint().order
+        return Ed448GoldilocksPoint.order
 
     def identity(self):
-        return Ed448GoldilocksPoint().identity()
+        return Ed448GoldilocksPoint.identity()
 
     def serialize(self, element):
         return element.encode()
 
     def deserialize(self, encoded):
-        return Ed448GoldilocksPoint().decode(encoded)
+        return Ed448GoldilocksPoint.decode(encoded)
 
     def element_byte_length(self):
         return self.field_bytes_length
 
     def hash_to_group(self, msg, dst):
-        return Ed448GoldilocksPoint().hash_to_group(msg, dst)
+        return Ed448GoldilocksPoint.hash_to_group(msg, dst)
 
     def scalar_mult(self, x, y):
         return x * y
