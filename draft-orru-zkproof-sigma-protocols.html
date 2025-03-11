@@ -1048,7 +1048,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Orrù</td>
-<td class="center">Expires 8 September 2025</td>
+<td class="center">Expires 12 September 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1061,12 +1061,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-orru-zkproof-sigma-protocols-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-07" class="published">7 March 2025</time>
+<time datetime="2025-03-11" class="published">11 March 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-08">8 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-09-12">12 September 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1111,7 +1111,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 8 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 12 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1432,7 +1432,7 @@ Parameters:
 6. return (group.serialize_elements(commitment) + group.serialize_scalars(response))
 </pre><a href="#section-3.1.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1.1-3">Line 5 is optional, but implementations wanting to perform input validation for the witness SHOULD adopt it.<a href="#section-3.1.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1.1-3">Implementations wanting to perform input validation for the witness SHOULD include Line 5.<a href="#section-3.1.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="group-verify">
@@ -1576,7 +1576,7 @@ class GroupMorphismPreimage:
     def allocate_scalars(self, n)
 </pre><a href="#section-3.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.4-3">The object <code>GroupMorphismPreimage</code> has two attributes: a morphism <code>morphism</code>, which is defined in <a href="#morphism" class="auto internal xref">Section 3.4.1</a>, and <code>image</code>, the morphism image of which the prover wants to show the pre-image of.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">The object <code>GroupMorphismPreimage</code> has two attributes: a morphism <code>morphism</code>, which will be defined in <a href="#morphism" class="auto internal xref">Section 3.4.1</a>, and <code>image</code>, the morphism image of which the prover wants to show the pre-image of.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 <p id="section-3.4-4">As an example, the statement represented in <a href="#sigma-protocol-group" class="auto internal xref">Section 3</a> can be written as:<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.4-5">
 <pre>
