@@ -4,9 +4,8 @@
 
 Zkproof                                                          M. Orrù
 Internet-Draft                                                      CNRS
-Intended status: Informational                                    C. Yun
-Expires: 12 September 2025                                   Apple, Inc.
-                                                           11 March 2025
+Intended status: Informational                             11 March 2025
+Expires: 12 September 2025
 
 
                          Fiat-Shamir Heuristic
@@ -71,11 +70,12 @@ Table of Contents
 
    1.  Introduction
    2.  The API
-   3.  Hash registry
-     3.1.  Shake128 implementation
-       3.1.1.  Initialization
-       3.1.2.  Absorb
-       3.1.3.  Squeeze
+   3.  Duplex Sponge registry
+     3.1.  Keccak implementation
+     3.2.  SHAKE128 compatibility [WIP]
+       3.2.1.  Initialization
+       3.2.2.  Absorb
+       3.2.3.  Squeeze
    4.  Codecs registry
      4.1.  P-384 (secp384r1)
        4.1.1.  Absorb scalars
@@ -85,7 +85,7 @@ Table of Contents
    6.  References
      6.1.  Normative References
      6.2.  Informative References
-   Authors' Addresses
+   Author's Address
 
 1.  Introduction
 
@@ -110,7 +110,7 @@ Table of Contents
 
    class SHO: type Unit
 
-     def new(label: bytes) -> SHO
+     def new(iv: bytes) -> SHO
      def absorb(self, x)
      def squeeze(self, length: int) -> [Unit]
      def finalize(self)
@@ -131,16 +131,23 @@ Table of Contents
    The above can be extended to support absorption and squeeze from
    different domains.  Such extensions are called codecs.
 
-3.  Hash registry
+3.  Duplex Sponge registry
 
-3.1.  Shake128 implementation
+   A duplex sponge in overwrite mode is based on a permutation function
+   P that maps a vector of r + c elements of type Unit elements.
+
+   class DuplexSponge(SHO): type Unit
+
+3.1.  Keccak implementation
+
+3.2.  SHAKE128 compatibility [WIP]
 
    SHAKE128 is a variable-length hash function based on the Keccak
    sponge construction [SHA3].  It belongs to the SHA-3 family but
    offers a flexible output length, and provides 128 bits of security
    against collision attacks, regardless of the output length requested.
 
-3.1.1.  Initialization
+3.2.1.  Initialization
 
    new(self, label)
 
@@ -155,7 +162,7 @@ Table of Contents
    1. h = shake_128(label)
    2. return h
 
-3.1.2.  Absorb
+3.2.2.  Absorb
 
    absorb(sho, x)
 
@@ -168,7 +175,7 @@ Table of Contents
 
    This method is also re-exported as absorb_bytes.
 
-3.1.3.  Squeeze
+3.2.3.  Squeeze
 
    squeeze(sho, length)
 
@@ -290,13 +297,8 @@ Table of Contents
               <https://nvlpubs.nist.gov/nistpubs/FIPS/
               NIST.FIPS.202.pdf>.
 
-Authors' Addresses
+Author's Address
 
    Michele Orrù
    CNRS
    Email: m@orru.net
-
-
-   Cathie Yun
-   Apple, Inc.
-   Email: cathieyun@gmail.com

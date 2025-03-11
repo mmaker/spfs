@@ -6,7 +6,6 @@
 <meta content="initial-scale=1.0" name="viewport">
 <title>Fiat-Shamir Heuristic</title>
 <meta content="Michele Orrù" name="author">
-<meta content="Cathie Yun" name="author">
 <meta content='
        This document describes the Fiat-Shamir transform via a stateful hash object that is capable of supporting a number of different hash functions, to "absorb" elements from different domains, and produce pseudoranom elements "squeezing" from the hash object. 
     ' name="description">
@@ -1049,7 +1048,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <td class="right">March 2025</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Orrù &amp; Yun</td>
+<td class="left">Orrù</td>
 <td class="center">Expires 12 September 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
@@ -1069,15 +1068,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
 <dd class="expires"><time datetime="2025-09-12">12 September 2025</time></dd>
-<dt class="label-authors">Authors:</dt>
+<dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
       <div class="author-name">M. Orrù</div>
 <div class="org">CNRS</div>
-</div>
-<div class="author">
-      <div class="author-name">C. Yun</div>
-<div class="org">Apple, Inc.</div>
 </div>
 </dd>
 </dl>
@@ -1158,19 +1153,22 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-the-api" class="internal xref">The API</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-hash-registry" class="internal xref">Hash registry</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-duplex-sponge-registry" class="internal xref">Duplex Sponge registry</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-shake128-implementation" class="internal xref">Shake128 implementation</a></p>
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-keccak-implementation" class="internal xref">Keccak implementation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-shake128-compatibility-wip" class="internal xref">SHAKE128 compatibility [WIP]</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.1">
-                    <p id="section-toc.1-1.3.2.1.2.1.1" class="keepWithNext"><a href="#section-3.1.1" class="auto internal xref">3.1.1</a>.  <a href="#name-initialization" class="internal xref">Initialization</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
+                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-initialization" class="internal xref">Initialization</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.2">
-                    <p id="section-toc.1-1.3.2.1.2.2.1"><a href="#section-3.1.2" class="auto internal xref">3.1.2</a>.  <a href="#name-absorb" class="internal xref">Absorb</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.2">
+                    <p id="section-toc.1-1.3.2.2.2.2.1"><a href="#section-3.2.2" class="auto internal xref">3.2.2</a>.  <a href="#name-absorb" class="internal xref">Absorb</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1.2.3">
-                    <p id="section-toc.1-1.3.2.1.2.3.1"><a href="#section-3.1.3" class="auto internal xref">3.1.3</a>.  <a href="#name-squeeze" class="internal xref">Squeeze</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.3">
+                    <p id="section-toc.1-1.3.2.2.2.3.1"><a href="#section-3.2.3" class="auto internal xref">3.2.3</a>.  <a href="#name-squeeze" class="internal xref">Squeeze</a></p>
 </li>
                 </ul>
 </li>
@@ -1210,7 +1208,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1252,7 +1250,7 @@ On a high level, it consists of three main components:<a href="#section-1-1" cla
       type Unit<a href="#section-2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-2-3">
 <pre>
-  def new(label: bytes) -&gt; SHO
+  def new(iv: bytes) -&gt; SHO
   def absorb(self, x)
   def squeeze(self, length: int) -&gt; [Unit]
   def finalize(self)
@@ -1276,23 +1274,33 @@ On a high level, it consists of three main components:<a href="#section-1-1" cla
 <p id="section-2-6">The above can be extended to support absorption and squeeze from different domains. Such extensions are called codecs.<a href="#section-2-6" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="hash-registry">
+<div id="duplex-sponge-registry">
 <section id="section-3">
-      <h2 id="name-hash-registry">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-hash-registry" class="section-name selfRef">Hash registry</a>
+      <h2 id="name-duplex-sponge-registry">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-duplex-sponge-registry" class="section-name selfRef">Duplex Sponge registry</a>
       </h2>
-<div id="shake128-implementation">
+<p id="section-3-1">A duplex sponge in overwrite mode is based on a permutation function <code>P</code> that maps a vector of <code>r + c</code> elements of type <code>Unit</code> elements.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">class DuplexSponge(SHO):
+    type Unit<a href="#section-3-2" class="pilcrow">¶</a></p>
+<div id="keccak-implementation">
 <section id="section-3.1">
-        <h3 id="name-shake128-implementation">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-shake128-implementation" class="section-name selfRef">Shake128 implementation</a>
+        <h3 id="name-keccak-implementation">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-keccak-implementation" class="section-name selfRef">Keccak implementation</a>
+      </h3>
+</section>
+</div>
+<div id="shake128-compatibility-wip">
+<section id="section-3.2">
+        <h3 id="name-shake128-compatibility-wip">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-shake128-compatibility-wip" class="section-name selfRef">SHAKE128 compatibility [WIP]</a>
         </h3>
-<p id="section-3.1-1">SHAKE128 is a variable-length hash function based on the Keccak sponge construction <span>[<a href="#SHA3" class="cite xref">SHA3</a>]</span>. It belongs to the SHA-3 family but offers a flexible output length, and provides 128 bits of security against collision attacks, regardless of the output length requested.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">SHAKE128 is a variable-length hash function based on the Keccak sponge construction <span>[<a href="#SHA3" class="cite xref">SHA3</a>]</span>. It belongs to the SHA-3 family but offers a flexible output length, and provides 128 bits of security against collision attacks, regardless of the output length requested.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <div id="initialization">
-<section id="section-3.1.1">
+<section id="section-3.2.1">
           <h4 id="name-initialization">
-<a href="#section-3.1.1" class="section-number selfRef">3.1.1. </a><a href="#name-initialization" class="section-name selfRef">Initialization</a>
+<a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-initialization" class="section-name selfRef">Initialization</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.1.1-1">
+<div class="alignLeft art-text artwork" id="section-3.2.1-1">
 <pre>
 new(self, label)
 
@@ -1306,16 +1314,16 @@ Outputs:
 
 1. h = shake_128(label)
 2. return h
-</pre><a href="#section-3.1.1-1" class="pilcrow">¶</a>
+</pre><a href="#section-3.2.1-1" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="absorb">
-<section id="section-3.1.2">
+<section id="section-3.2.2">
           <h4 id="name-absorb">
-<a href="#section-3.1.2" class="section-number selfRef">3.1.2. </a><a href="#name-absorb" class="section-name selfRef">Absorb</a>
+<a href="#section-3.2.2" class="section-number selfRef">3.2.2. </a><a href="#name-absorb" class="section-name selfRef">Absorb</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.1.2-1">
+<div class="alignLeft art-text artwork" id="section-3.2.2-1">
 <pre>
 absorb(sho, x)
 
@@ -1325,17 +1333,17 @@ Inputs:
 - x, a byte array
 
 1. h.update(x)
-</pre><a href="#section-3.1.2-1" class="pilcrow">¶</a>
+</pre><a href="#section-3.2.2-1" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1.2-2">This method is also re-exported as <code>absorb_bytes</code>.<a href="#section-3.1.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2.2-2">This method is also re-exported as <code>absorb_bytes</code>.<a href="#section-3.2.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="squeeze">
-<section id="section-3.1.3">
+<section id="section-3.2.3">
           <h4 id="name-squeeze">
-<a href="#section-3.1.3" class="section-number selfRef">3.1.3. </a><a href="#name-squeeze" class="section-name selfRef">Squeeze</a>
+<a href="#section-3.2.3" class="section-number selfRef">3.2.3. </a><a href="#name-squeeze" class="section-name selfRef">Squeeze</a>
           </h4>
-<div class="alignLeft art-text artwork" id="section-3.1.3-1">
+<div class="alignLeft art-text artwork" id="section-3.2.3-1">
 <pre>
 squeeze(sho, length)
 
@@ -1345,9 +1353,9 @@ Inputs:
 - length, the number of elements to be squeezed
 
 1. h.digest(length)
-</pre><a href="#section-3.1.3-1" class="pilcrow">¶</a>
+</pre><a href="#section-3.2.3-1" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1.3-2">This method is also re-exported as <code>squeeze_bytes</code>.<a href="#section-3.1.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.2.3-2">This method is also re-exported as <code>squeeze_bytes</code>.<a href="#section-3.2.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1518,8 +1526,8 @@ field_bytes_length, the number of bytes to represent the scalar element, equal t
 </div>
 <div id="authors-addresses">
 <section id="appendix-A">
-      <h2 id="name-authors-addresses">
-<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
       </h2>
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Michele Orrù</span></div>
@@ -1527,14 +1535,6 @@ field_bytes_length, the number of bytes to represent the scalar element, equal t
 <div class="email">
 <span>Email:</span>
 <a href="mailto:m@orru.net" class="email">m@orru.net</a>
-</div>
-</address>
-<address class="vcard">
-        <div dir="auto" class="left"><span class="fn nameRole">Cathie Yun</span></div>
-<div dir="auto" class="left"><span class="org">Apple, Inc.</span></div>
-<div class="email">
-<span>Email:</span>
-<a href="mailto:cathieyun@gmail.com" class="email">cathieyun@gmail.com</a>
 </div>
 </address>
 </section>

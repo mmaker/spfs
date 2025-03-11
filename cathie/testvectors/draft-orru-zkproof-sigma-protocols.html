@@ -1437,7 +1437,7 @@ Parameters:
 6. return (group.serialize_elements(commitment) + group.serialize_scalars(response))
 </pre><a href="#section-3.1.1-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1.1-3">Line 5 is optional, but implementations wanting to perform input validation for the witness SHOULD adopt it.<a href="#section-3.1.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1.1-3">Implementations wanting to perform input validation for the witness SHOULD include Line 5.<a href="#section-3.1.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="group-verify">
@@ -1581,7 +1581,7 @@ class GroupMorphismPreimage:
     def allocate_scalars(self, n)
 </pre><a href="#section-3.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.4-3">The object <code>GroupMorphismPreimage</code> has two attributes: a morphism <code>morphism</code>, which is defined in <a href="#morphism" class="auto internal xref">Section 3.4.1</a>, and <code>image</code>, the morphism image of which the prover wants to show the pre-image of.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">The object <code>GroupMorphismPreimage</code> has two attributes: a morphism <code>morphism</code>, which will be defined in <a href="#morphism" class="auto internal xref">Section 3.4.1</a>, and <code>image</code>, the morphism image of which the prover wants to show the pre-image of.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 <p id="section-3.4-4">As an example, the statement represented in <a href="#sigma-protocol-group" class="auto internal xref">Section 3</a> can be written as:<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.4-5">
 <pre>
