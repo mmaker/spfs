@@ -4,8 +4,9 @@
 
 Network Working Group                                            M. Orrù
 Internet-Draft                                                      CNRS
-Intended status: Informational                             11 March 2025
-Expires: 12 September 2025
+Intended status: Informational                                    C. Yun
+Expires: 12 September 2025                                   Apple, Inc.
+                                                           11 March 2025
 
 
                             Sigma Protocols
@@ -93,7 +94,7 @@ Table of Contents
    6.  References
      6.1.  Normative References
      6.2.  Informative References
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -645,8 +646,13 @@ Procedure:
               Elliptic Curve Cryptography",
               <https://www.secg.org/sec1-v2.pdf>.
 
-Author's Address
+Authors' Addresses
 
    Michele Orrù
    CNRS
    Email: m@orru.net
+
+
+   Cathie Yun
+   Apple, Inc.
+   Email: cathieyun@gmail.com
