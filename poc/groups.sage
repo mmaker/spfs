@@ -4,6 +4,7 @@
 import sys
 import hashlib
 import struct
+from abc import ABC, abstractmethod
 
 from hash_to_field import I2OSP, OS2IP, expand_message_xmd, expand_message_xof, XMDExpander, hash_to_field
 
@@ -40,7 +41,7 @@ def OS2IP_le(octets, skip_assert=False):
         assert octets == I2OSP_le(ret, len(octets))
     return ret
 
-class ScalarField:
+class Scalar:
 
     def __init__(self, order):
         self.field = GF(order)  # Delegate field operations to GF instance
@@ -54,12 +55,12 @@ class ScalarField:
         return int(self.field_bytes_length)
 
     def random_scalar(self, rng):
-        return rng.randint(1, self.order - 1)
+        return self.field(rng.randint(1, self.order - 1))
 
 
-class NISTCurveScalarField(ScalarField):
+class NISTCurveScalar(Scalar):
     def __init__(self, order, F, L, H, expander, k):
-        ScalarField.__init__(self, order)
+        Scalar.__init__(self, order)
         self.m = F.degree()
         self.L = L
         self.k = k
@@ -67,7 +68,7 @@ class NISTCurveScalarField(ScalarField):
         self.expander = expander
 
     def serialize_scalar(self, scalar):
-        assert(0 <= scalar < self.order)
+        assert(0 <= int(scalar) < self.order)
         return I2OSP(scalar, self.scalar_byte_length())
 
     def deserialize_scalar(self, encoded):
@@ -92,33 +93,42 @@ class NISTCurveScalarField(ScalarField):
         return hash_to_field(msg, 1, self.order, self.m, self.L, expander)[0][0]
 
 
-class Group(object):
+
+class Group(ABC):
     ScalarField = None
 
     def __init__(self, name):
         self.name = name
 
+    @abstractmethod
     def generator(self):
         raise NotImplementedError
 
+    @abstractmethod
     def identity(self):
         raise NotImplementedError
 
+    @abstractmethod
     def order(self):
         raise NotImplementedError
 
-    def serialize(self, element):
+    @abstractmethod
+    def serialize(element):
         raise NotImplementedError
 
+    @abstractmethod
     def deserialize(self, encoded):
         raise NotImplementedError
 
+    @abstractmethod
     def element_byte_length(self):
         raise NotImplementedError
 
+    @abstractmethod
     def hash_to_group(self, x):
         raise NotImplementedError
 
+    @abstractmethod
     def scalar_mult(self, x, y):
         raise NotImplementedError
 
@@ -143,7 +153,7 @@ class GroupNISTCurve(Group):
         self.h2c_suite = suite
         self.G = EC(F(gx), F(gy))
         self.field_bytes_length = int(ceil(len(self.p.bits()) / 8))
-        self.ScalarField = NISTCurveScalarField(order, F, L, H, expander, k)
+        self.ScalarField = NISTCurveScalar(order, F, L, H, expander, k)
 
     def generator(self):
         return self.G
@@ -227,9 +237,9 @@ class GroupP521(GroupNISTCurve):
         gy = 0x11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650
         GroupNISTCurve.__init__(self, "P521_XMD:SHA-512_SSWU_RO_", p521_sswu_ro, p521_F, p521_A, p521_B, p521_p, p521_order, gx, gy, 98, hashlib.sha512, XMDExpander, 256)
 
-class Ristretto255ScalarField(ScalarField):
+class Ristretto255ScalarField(Scalar):
     def __init__(self, order):
-        ScalarField.__init__(self, order)
+        Scalar.__init__(self, order)
         self.k = 128
 
     def serialize_scalar(self, scalar):
@@ -271,9 +281,9 @@ class GroupRistretto255(Group):
     def scalar_mult(self, x, y):
         return x * y
 
-class Decaf448ScalarField(ScalarField):
+class Decaf448ScalarField(Scalar):
     def __init__(self, order):
-        ScalarField.__init__(self, order)
+        Scalar.__init__(self, order)
         self.k = 224
 
     def serialize_scalar(self, scalar):
