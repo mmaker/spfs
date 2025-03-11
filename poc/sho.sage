@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections import namedtuple
-from sagelib.arc_groups import G, GenG, GenH, hash_to_group, hash_to_scalar
 from hash_to_field import I2OSP, OS2IP, expand_message_xmd, expand_message_xof, XMDExpander, hash_to_field
 
 from util import to_hex, to_bytes
