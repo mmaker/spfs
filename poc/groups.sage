@@ -53,6 +53,9 @@ class ScalarField:
     def scalar_byte_length(self):
         return int(self.field_bytes_length)
 
+    def random_scalar(self, rng):
+        return rng.randint(1, self.order - 1)
+
 
 class NISTCurveScalarField(ScalarField):
     def __init__(self, order, F, L, H, expander, k):
@@ -115,12 +118,6 @@ class Group(object):
 
     def hash_to_group(self, x):
         raise NotImplementedError
-
-    def hash_to_scalar(self, x):
-        raise NotImplementedError
-
-    def random_scalar(self, rng):
-        return rng.randint(1, self.order() - 1)
 
     def scalar_mult(self, x, y):
         raise NotImplementedError
