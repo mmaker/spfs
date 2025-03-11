@@ -227,12 +227,25 @@ class GroupP521(GroupNISTCurve):
         gy = 0x11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650
         GroupNISTCurve.__init__(self, "P521_XMD:SHA-512_SSWU_RO_", p521_sswu_ro, p521_F, p521_A, p521_B, p521_p, p521_order, gx, gy, 98, hashlib.sha512, XMDExpander, 256)
 
+class Ristretto255ScalarField(ScalarField):
+    def __init__(self, order):
+        ScalarField.__init__(self, order)
+        self.k = 128
+
+    def serialize_scalar(self, scalar):
+        return I2OSP(scalar % self.order, self.scalar_byte_length())[::-1]
+
+    def hash_to_scalar(self, msg, dst):
+        uniform_bytes = expand_message_xmd(msg, dst, 64, hashlib.sha512, self.k)
+        return OS2IP_le(uniform_bytes) % self.order
+
+
 class GroupRistretto255(Group):
     def __init__(self):
         Group.__init__(self, "ristretto255")
-        self.k = 128
         self.L = 48
         self.field_bytes_length = 32
+        self.ScalarField = Ristretto255ScalarField(Ed25519Point().order)
 
     def generator(self):
         return Ed25519Point().base()
@@ -249,21 +262,11 @@ class GroupRistretto255(Group):
     def deserialize(self, encoded):
         return Ed25519Point().decode(encoded)
 
-    def serialize_scalar(self, scalar):
-        return I2OSP(scalar % self.order(), self.scalar_byte_length())[::-1]
-
     def element_byte_length(self):
-        return self.field_bytes_length
-
-    def scalar_byte_length(self):
         return self.field_bytes_length
 
     def hash_to_group(self, msg, dst):
         return Ed25519Point().hash_to_group(msg, dst)
-
-    def hash_to_scalar(self, msg, dst):
-        uniform_bytes = expand_message_xmd(msg, dst, 64, hashlib.sha512, self.k)
-        return OS2IP_le(uniform_bytes) % self.order()
 
     def scalar_mult(self, x, y):
         return x * y
