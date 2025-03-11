@@ -271,12 +271,24 @@ class GroupRistretto255(Group):
     def scalar_mult(self, x, y):
         return x * y
 
+class Decaf448ScalarField(ScalarField):
+    def __init__(self, order):
+        ScalarField.__init__(self, order)
+        self.k = 224
+
+    def serialize_scalar(self, scalar):
+        return I2OSP(scalar % self.order, self.scalar_byte_length())[::-1]
+
+    def hash_to_scalar(self, msg, dst):
+        uniform_bytes = expand_message_xof(msg, dst, int(64), hashlib.shake_256, self.k)
+        return OS2IP_le(uniform_bytes) % self.order()
+
 class GroupDecaf448(Group):
     def __init__(self):
         Group.__init__(self, "decaf448")
-        self.k = 224
         self.L = 84
         self.field_bytes_length = 56
+        self.ScalarField = Decaf448ScalarField(Ed448GoldilocksPoint().order)
 
     def generator(self):
         return Ed448GoldilocksPoint().base()
@@ -293,21 +305,11 @@ class GroupDecaf448(Group):
     def deserialize(self, encoded):
         return Ed448GoldilocksPoint().decode(encoded)
 
-    def serialize_scalar(self, scalar):
-        return I2OSP(scalar % self.order(), self.scalar_byte_length())[::-1]
-
     def element_byte_length(self):
-        return self.field_bytes_length
-
-    def scalar_byte_length(self):
         return self.field_bytes_length
 
     def hash_to_group(self, msg, dst):
         return Ed448GoldilocksPoint().hash_to_group(msg, dst)
-
-    def hash_to_scalar(self, msg, dst):
-        uniform_bytes = expand_message_xof(msg, dst, int(64), hashlib.shake_256, self.k)
-        return OS2IP_le(uniform_bytes) % self.order()
 
     def scalar_mult(self, x, y):
         return x * y
