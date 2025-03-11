@@ -64,6 +64,5 @@ class Shake128GroupP384(Shake128):
         return scalars
 
     def absorb_elements(self, elements: list):
-        for element in elements:
-            self.absorb_bytes(self.GG.serialize(element))
+        self.absorb_bytes(self.GG.serialize(elements))
         return self

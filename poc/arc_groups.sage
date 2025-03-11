@@ -14,4 +14,4 @@ def hash_to_scalar(x, info):
     return G.hash_to_scalar(x, dst)
 
 GenG = G.generator()
-GenH = hash_to_group(G.serialize(GenG), to_bytes("generatorH"))
+GenH = hash_to_group(G.serialize([GenG]), to_bytes("generatorH"))
