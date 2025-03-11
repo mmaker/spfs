@@ -26,10 +26,6 @@ author:
     fullname: "Michele Orrù"
     organization: CNRS
     email: "m@orru.net"
--
-    fullname: "Cathie Yun"
-    organization: Apple, Inc.
-    email: cathieyun@gmail.com
 
 normative:
 
@@ -64,7 +60,7 @@ A stateful hash object has the following interface:
   class SHO:
       type Unit
 
-      def new(label: bytes) -> SHO
+      def new(iv: bytes) -> SHO
       def absorb(self, x)
       def squeeze(self, length: int) -> [Unit]
       def finalize(self)
@@ -78,9 +74,16 @@ where
 
 The above can be extended to support absorption and squeeze from different domains. Such extensions are called codecs.
 
-# Hash registry
+# Duplex Sponge registry
 
-## Shake128 implementation
+A duplex sponge in overwrite mode is based on a permutation function `P` that maps a vector of `r + c` elements of type `Unit` elements.
+
+class DuplexSponge(SHO):
+    type Unit
+
+## Keccak implementation
+
+## SHAKE128 compatibility [WIP]
 
 SHAKE128 is a variable-length hash function based on the Keccak sponge construction [SHA3]. It belongs to the SHA-3 family but offers a flexible output length, and provides 128 bits of security against collision attacks, regardless of the output length requested.
 

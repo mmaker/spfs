@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from sagelib.sho import Shake128GroupP384
 
-def prove_batchable(rng, label, statement, witness, group):
+def prove(rng, label, statement, witness, group):
     sp = SchnorrProof(statement, group)
     (prover_state, commitment) = sp.prover_commit(rng, witness)
     challenge, = Shake128GroupP384(label).absorb_elements(commitment).squeeze_scalars(1)
@@ -13,18 +13,7 @@ def prove_batchable(rng, label, statement, witness, group):
     batched_proof = (group.serialize_elements(commitment) + group.serialize_scalars(response))
     return batched_proof
 
-def prove_batchable_1(rng, sp, h, witness, group):
-    (prover_state, commitment) = sp.prover_commit(rng, witness)
-    challenge, = h.absorb_elements(commitment).squeeze_scalars(1)
-    response = sp.prover_response(prover_state, challenge)
-
-    assert sp.verifier(commitment, challenge, response)
-    return (
-        group.serialize_elements(commitment) +
-        group.serialize_scalars(response)
-    )
-
-def verify_batchable(label, statement, proof, group):
+def verify(label, statement, proof, group):
     commitment_bytes = proof[: statement.commit_bytes_len]
     commitment = group.deserialize_elements(commitment_bytes)
 
@@ -131,7 +120,7 @@ class SchnorrProof(SigmaProtocol):
     def prover_response(self, prover_state: ProverState, challenge):
         (witness, nonces) = prover_state
         return [
-            (nonces[i] + challenge * witness[i]) % self.group.order()
+            nonces[i] + challenge * witness[i]
             for i in range(self.statement.morphism.num_scalars)
         ]
 

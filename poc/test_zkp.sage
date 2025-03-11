@@ -3,7 +3,7 @@
 
 try:
     from sagelib.zkp_groups import G as group, Gs as generators, hash_to_group, context_string
-    from sagelib.zkp import GroupMorphismPreimage, prove_batchable, verify_batchable
+    from sagelib.zkp import GroupMorphismPreimage, prove, verify
     from sagelib.test_drng import TestDRNG
     from util import to_hex, to_bytes
     from sagelib.sho import Shake128GroupP384
@@ -47,10 +47,10 @@ def discrete_logarithm(vectors):
     [var_x] = statement.allocate_scalars(1)
     statement.append_equation(X, [(var_x, G)])
 
-    proof = prove_batchable(rng, b"test", statement, [x], group)
+    proof = prove(rng, b"test", statement, [x], group)
     hex_proof = to_hex(proof)
     print(f"discrete_logarithm proof: {hex_proof}\n")
-    assert verify_batchable(b"test", statement, proof, group)
+    assert verify(b"test", statement, proof, group)
 
     vectors["discrete_logarithm"] = {
         "Context": context_string,
@@ -77,10 +77,10 @@ def dleq(vectors):
     statement.append_equation(X, [(var_x, G)])
     statement.append_equation(Y, [(var_x, H)])
 
-    proof = prove_batchable(rng, b"test", statement, [x], group)
+    proof = prove(rng, b"test", statement, [x], group)
     hex_proof = to_hex(proof)
     print(f"dleq proof: {hex_proof}\n")
-    assert verify_batchable(b"test", statement, proof, group)
+    assert verify(b"test", statement, proof, group)
 
     vectors["dleq"] = {
         "Context": context_string,
@@ -105,10 +105,10 @@ def pedersen_commitment(vectors):
     var_x, var_r = statement.allocate_scalars(2)
     statement.append_equation(C, [(var_x, G), (var_r, H)])
 
-    proof = prove_batchable(rng, b"test", statement, [x, r], group)
+    proof = prove(rng, b"test", statement, [x, r], group)
     hex_proof = to_hex(proof)
     print(f"pedersen_commitment proof: {hex_proof}\n")
-    assert verify_batchable(b"test", statement, proof, group)
+    assert verify(b"test", statement, proof, group)
 
     vectors["pedersen_commitment"] = {
         "Context": context_string,
@@ -136,10 +136,10 @@ def pedersen_commitment_dleq(vectors):
     statement.append_equation(Y, [(var_x, Gs[2]), (var_r, Gs[3])])
 
     # Test batched proof
-    proof = prove_batchable(rng, b"test", statement, witness, group)
+    proof = prove(rng, b"test", statement, witness, group)
     hex_proof = to_hex(proof)
     print(f"pedersen_commitment_dleq proof: {hex_proof}\n")
-    assert verify_batchable(b"test", statement, proof, group)
+    assert verify(b"test", statement, proof, group)
 
     vectors["pedersen_commitment_dleq"] = {
         "Context": context_string,

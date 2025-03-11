@@ -77,7 +77,7 @@ class Group(object):
         raise NotImplementedError
 
     def random_scalar(self, rng):
-        return rng.randint(1, self.order() - 1)
+        return self.ScalarField(rng.randint(1, self.order() - 1))
 
     def scalar_mult(self, x, y):
         raise NotImplementedError
@@ -108,6 +108,7 @@ class GroupNISTCurve(Group):
         self.H = H
         self.expander = expander
         self.field_bytes_length = int(ceil(len(self.p.bits()) / 8))
+        self.ScalarField = GF(order)
 
     def generator(self):
         return self.G
@@ -144,8 +145,8 @@ class GroupNISTCurve(Group):
         return b"".join([self.serialize(element) for element in elements])
 
     def serialize_scalar(self, scalar):
-        assert(0 <= scalar < self.order())
-        return I2OSP(scalar, self.scalar_byte_length())
+        assert(0 <= int(scalar) < self.order())
+        return I2OSP(int(scalar), self.scalar_byte_length())
 
     def serialize_scalars(self, scalars):
         return b"".join([self.serialize_scalar(scalar) for scalar in scalars])

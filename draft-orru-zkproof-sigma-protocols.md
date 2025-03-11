@@ -170,7 +170,7 @@ The proving function demands to instantiate a statement and a witness (as in {{w
     5. assert sp.verifier(commitment, challenge, response)    # optional
     6. return (group.serialize_elements(commitment) + group.serialize_scalars(response))
 
-Line 5 is optional, but implementations wanting to perform input validation for the witness SHOULD adopt it.
+Implementations wanting to perform input validation for the witness SHOULD include Line 5.
 
 ### Public verification function {#group-verify}
 
@@ -248,7 +248,7 @@ Internally, the constraint is parametrized by a `Group` and can be represented a
         def append_equation(self, lhs, rhs)
         def allocate_scalars(self, n)
 
-The object `GroupMorphismPreimage` has two attributes: a morphism `morphism`, which is defined in {{morphism}}, and `image`, the morphism image of which the prover wants to show the pre-image of.
+The object `GroupMorphismPreimage` has two attributes: a morphism `morphism`, which will be defined in {{morphism}}, and `image`, the morphism image of which the prover wants to show the pre-image of.
 
 As an example, the statement represented in {{sigma-protocol-group}} can be written as:
 
