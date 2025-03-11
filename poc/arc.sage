@@ -25,7 +25,7 @@ class Credential(object):
         self.U = U
         self.U_prime = U_prime
         self.X1 = X1
-    
+
 class PresentationState(object):
     def __init__(self, credential, presentation_context, presentation_limit):
         self.credential = credential
@@ -37,9 +37,9 @@ class PresentationState(object):
         if len(self.presentation_nonce_set) >= self.presentation_limit:
             raise Exception("LimitExceededError")
 
-        a = G.random_scalar(rng)
-        r = G.random_scalar(rng)
-        z = G.random_scalar(rng)
+        a = G.random(rng)
+        r = G.random(rng)
+        z = G.random(rng)
 
         U = a * self.credential.U
         U_prime = a * self.credential.U_prime
@@ -55,7 +55,7 @@ class PresentationState(object):
         tag = inverse_mod(self.credential.m1 + nonce, GroupP384().order()) * generator_T
         V = (z * self.credential.X1) - (r * GenG)
         m1_tag = self.credential.m1 * tag
-        
+
         proof = PresentationProof.prove(U, U_prime_commit, m1_commit, tag, generator_T, self.credential, V, r, z, nonce, m1_tag, rng)
         presentation = Presentation(U, U_prime_commit, m1_commit, nonce, tag, proof)
 
@@ -108,7 +108,7 @@ class CredentialResponse(object):
 
 class ClientPrivateKey(object):
     def __init__(self, rng, private_info):
-        self.sk = G.random_scalar(rng)
+        self.sk = G.random(rng)
         self.private_attr = hash_to_scalar(private_info, to_bytes("private"))
         self.pk = self.sk * GenG
 
@@ -120,17 +120,17 @@ class Client(object):
         self.rng = rng
 
     def request(self, request_context, vectors):
-        m1 = G.random_scalar(self.rng)
+        m1 = G.random(self.rng)
         m2 = hash_to_scalar(request_context, to_bytes("requestContext"))
-        r1 = G.random_scalar(self.rng)
-        r2 = G.random_scalar(self.rng)
+        r1 = G.random(self.rng)
+        r2 = G.random(self.rng)
 
         m1_enc = m1 * GenG + r1 * GenH
         m2_enc = m2 * GenG + r2 * GenH
 
         proof = CredentialRequestProof.prove(m1, m2, r1, r2, m1_enc, m2_enc, self.rng)
         blinded_request = BlindedRequest(m1_enc, m2_enc, proof)
-        
+
         client_secrets = ClientSecrets(m1, m2, r1, r2)
 
         context = CredentialRequestContext(client_secrets, blinded_request)
@@ -162,10 +162,10 @@ class ServerPrivateKey(object):
 class Server(object):
     @classmethod
     def keygen(cls, rng, vectors):
-        x0 = G.random_scalar(rng)
-        x1 = G.random_scalar(rng)
-        x2 = G.random_scalar(rng)
-        xb = G.random_scalar(rng)
+        x0 = G.random(rng)
+        x1 = G.random(rng)
+        x2 = G.random(rng)
+        xb = G.random(rng)
         X0 = (x0 * GenG) + (xb * GenH)
         X1 = (x1 * GenH)
         X2 = (x2 * GenH)
@@ -186,8 +186,8 @@ class Server(object):
     def issue(self, private_key, public_key, blinded_request, rng, vectors):
         if CredentialRequestProof.verify(blinded_request) == False:
             raise Exception("request proof verification failed")
-        
-        b = G.random_scalar(rng)
+
+        b = G.random(rng)
         U = b * GenG
 
         enc_U_prime = b * (public_key.X0 + private_key.x1 * blinded_request.m1_enc + private_key.x2 * blinded_request.m2_enc)
@@ -209,11 +209,11 @@ class Server(object):
         vectors["proof"] = to_hex(response_proof.serialize())
 
         return response
-    
+
     def verify_presentation(self, private_key, public_key, request_context, presentation_context, presentation, presentation_limit):
         if presentation.nonce < 0 or presentation.nonce >= presentation_limit:
             raise Exception("InvalidNonce")
-        
+
         generator_T = hash_to_group(presentation_context, to_bytes("Tag"))
         m1_tag = generator_T - (presentation.nonce * presentation.tag)
         return PresentationProof.verify(private_key, public_key, request_context, presentation_context, presentation, m1_tag)

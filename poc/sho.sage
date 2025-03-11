@@ -55,7 +55,7 @@ class Shake128GroupP384(Shake128):
         return self
 
     def squeeze_scalars(self, length: int):
-        byte_len = self.GG.scalar_byte_length() + 16
+        byte_len = self.GG.ScalarField.scalar_byte_length() + 16
         scalars = []
         for _ in range(length):
             uniform_bytes = self.squeeze_bytes(byte_len)
@@ -64,6 +64,5 @@ class Shake128GroupP384(Shake128):
         return scalars
 
     def absorb_elements(self, elements: list):
-        for element in elements:
-            self.absorb_bytes(self.GG.serialize(element))
+        self.absorb_bytes(self.GG.serialize(elements))
         return self
