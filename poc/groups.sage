@@ -41,21 +41,33 @@ def OS2IP_le(octets, skip_assert=False):
         assert octets == I2OSP_le(ret, len(octets))
     return ret
 
-class Scalar:
-
-    def __init__(self, order):
-        self.field = GF(order)  # Delegate field operations to GF instance
-        self.order = order
-        self.field_bytes_length = int(ceil(len(self.order.bits()) / 8))
+class Scalar(ABC):
+    def __new__(cls, order, *args, **kwargs):
+        cls.field = GF(order)  # Delegate field operations to GF instance
+        cls.order = order
+        cls.field_bytes_length = (order.bit_length() + 7) // 8
+        return cls
 
     def __getattr__(self, name):
         return getattr(self.field, name)  # Delegate missing attributes
 
-    def scalar_byte_length(self):
-        return int(self.field_bytes_length)
+    @classmethod
+    def scalar_byte_length(cls):
+        return int(cls.field_bytes_length)
 
-    def random_scalar(self, rng):
-        return self.field(rng.randint(1, self.order - 1))
+    @classmethod
+    def random_scalar(cls, rng):
+        return cls.field(rng.randint(1, cls.order - 1))
+
+    @classmethod
+    @abstractmethod
+    def serialize_scalar(cls, scalar):
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def deserialize_scalar(cls, encoded):
+        raise NotImplementedError
 
 
 class NISTCurveScalar(Scalar):
@@ -67,30 +79,35 @@ class NISTCurveScalar(Scalar):
         self.H = H
         self.expander = expander
 
-    def serialize_scalar(self, scalar):
-        assert(0 <= int(scalar) < self.order)
-        return I2OSP(scalar, self.scalar_byte_length())
+    @classmethod
+    def serialize_scalar(cls, scalar):
+        assert(0 <= int(scalar) < cls.order)
+        return I2OSP(scalar, cls.scalar_byte_length())
 
-    def deserialize_scalar(self, encoded):
+    @classmethod
+    def deserialize_scalar(cls, encoded):
         return OS2IP(encoded)
 
-    def serialize_scalars(self, scalars):
-        return b"".join([self.serialize_scalar(scalar) for scalar in scalars])
+    @classmethod
+    def serialize_scalars(cls, scalars):
+        return b"".join([cls.serialize_scalar(scalar) for scalar in scalars])
 
-    def deserialize_scalars(self, encoded):
+    @classmethod
+    def deserialize_scalars(cls, encoded):
         encoded_len = len(encoded)
-        scalar_len = self.scalar_byte_length()
+        scalar_len = cls.scalar_byte_length()
         num_scalars, remainder = divmod(encoded_len, scalar_len)
         if remainder != 0:
             raise ValueError("invalid scalar length")
         return [
-            self.deserialize_scalar(encoded[i: i + scalar_len])
+            cls.deserialize_scalar(encoded[i: i + scalar_len])
             for i in range(0, encoded_len, scalar_len)
         ]
 
-    def hash_to_scalar(self, msg, dst):
-        expander = self.expander(dst, self.H, self.k)
-        return hash_to_field(msg, 1, self.order, self.m, self.L, expander)[0][0]
+    @classmethod
+    def hash_to_scalar(cls, msg, dst):
+        expander = cls.expander(dst, cls.H, cls.k)
+        return hash_to_field(msg, 1, cls.order, cls.m, cls.L, expander)[0][0]
 
 
 
@@ -100,8 +117,9 @@ class Group(ABC):
     def __init__(self, name):
         self.name = name
 
+    @classmethod
     @abstractmethod
-    def generator(self):
+    def generator(cls):
         raise NotImplementedError
 
     @abstractmethod
