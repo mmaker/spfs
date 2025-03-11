@@ -19,14 +19,14 @@ setup:
 	cp h2c/poc/*.sage .
 
 test: pyfiles
-	sage test_zkp.sage
+	sage test_sigma_protocols.sage
 
 vectors: pyfiles
 	@echo "Removing vectors folder, if present"
 	@rm -rf vectors
 	@echo "Creating vectors folder"
 	@mkdir -p vectors
-	sage test_zkp.sage
+	sage test_sigma_prtocols.sage
 
 .PHONY: clean
 clean:

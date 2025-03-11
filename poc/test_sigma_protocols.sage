@@ -2,8 +2,8 @@
 # vim: syntax=python
 
 try:
-    from sagelib.zkp_groups import G as group, Gs as generators, hash_to_group, context_string
-    from sagelib.zkp import GroupMorphismPreimage, prove, verify
+    from sagelib.sigma_protocols_groups import G as group, Gs as generators, hash_to_group, context_string
+    from sagelib.sigma_protocols import GroupMorphismPreimage, prove, verify
     from sagelib.test_drng import TestDRNG
     from util import to_hex, to_bytes
     from sagelib.sho import Shake128GroupP384
