@@ -4,8 +4,8 @@
 
 Zkproof                                                          M. Orrù
 Internet-Draft                                                      CNRS
-Intended status: Informational                              6 March 2025
-Expires: 7 September 2025
+Intended status: Informational                             11 March 2025
+Expires: 12 September 2025
 
 
                          Fiat-Shamir Heuristic
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 September 2025.
+   This Internet-Draft will expire on 12 September 2025.
 
 Copyright Notice
 
@@ -99,9 +99,9 @@ Table of Contents
 
    The core actions supported are:
 
-   *  Absorb indicates a sequence of len elements in input
+   *  absorb indicates a sequence of len elements in input
 
-   *  Squeeze indicates an amount len of output to be produced
+   *  squeeze indicates an amount len of output to be produced
 
 2.  The API
 
