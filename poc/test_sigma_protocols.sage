@@ -6,9 +6,10 @@ try:
     from sagelib.sigma_protocols import GroupMorphismPreimage, prove, verify
     from sagelib.test_drng import TestDRNG
     from util import to_hex, to_bytes
-    from sagelib.sho import Shake128GroupP384
+    from sagelib.fiat_shamir import DuplexSpongeKeccakP384
     import json
 except ImportError as e:
+    import sys
     sys.exit("Error loading preprocessed sage files. Try running `make setup && make clean pyfiles`. Full error: " + e)
 
 def wrap_write(fh, arg, *args):
