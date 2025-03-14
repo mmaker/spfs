@@ -7,8 +7,6 @@ import hashlib
 from keccak import Keccak
 from sagelib.groups import GroupP384
 
-
-
 class DuplexSponge(ABC):
     Unit = None
 
@@ -23,7 +21,6 @@ class DuplexSponge(ABC):
     @abstractmethod
     def squeeze(self, length: int):
         raise NotImplementedError
-
 
 
 class KeccakPermutationState:
@@ -67,7 +64,7 @@ class KeccakPermutationState:
 
     def permute(self):
         state = self._bytes_to_keccak_state(bytearray(self.state))
-        new_state = state # XXX. self.p.KeccakF(state)
+        new_state = self.p.KeccakF(state)
         self.state = self._keccak_state_to_bytes(new_state)
 
 class DuplexSponge:

@@ -1,5 +1,5 @@
 ---
-title: "Fiat-Shamir Heuristic"
+title: "Fiat-Shamir Transformation"
 category: info
 
 docname: draft-orru-zkproof-fiat-shamir-latest
@@ -36,14 +36,15 @@ informative:
 
 --- abstract
 
-This document describes the Fiat-Shamir transform via a stateful hash object that is capable of supporting a number of different hash functions, to "absorb" elements from different domains, and produce pseudoranom elements "squeezing" from the hash object.
+This document describes the Fiat-Shamir transformation via a duplex sponge interface that is capable of supporting a number of different hash functions, to "absorb" elements from different domains, and produce pseudoranom elements "squeezing" from the hash object.
+
+In addition, the specification provides codes, a way to absorb specific data types.
 
 --- middle
 
 # Introduction
 
-A stateful hash object (SHO) can absorb inputs incrementally and squeeze variable-length unpredictable messages.
-On a high level, it consists of three main components:
+The Fiat-Shamir transformation relies on a hash function that can absorb inputs incrementally and squeeze variable-length unpredictable messages. On a high level, it consists of three main components:
 
 - A label.
 - An underlying hash function H, in a chosen mode, which the SHO invokes to execute the actions.
@@ -53,11 +54,13 @@ The core actions supported are:
 - `absorb` indicates a sequence of `len` elements in input
 - `squeeze` indicates an amount `len` of output to be produced
 
+The API follows the template of duplex sponges.
+
 # The API
 
 A stateful hash object has the following interface:
 
-  class SHO:
+  class DuplexSponge:
       type Unit
 
       def new(iv: bytes) -> SHO
@@ -74,14 +77,71 @@ where
 
 The above can be extended to support absorption and squeeze from different domains. Such extensions are called codecs.
 
-# Duplex Sponge registry
+# Duplex Sponges
 
 A duplex sponge in overwrite mode is based on a permutation function `P` that maps a vector of `r + c` elements of type `Unit` elements.
 
-class DuplexSponge(SHO):
-    type Unit
+## Implementation
 
-## Keccak implementation
+### Initialization
+
+    new(iv)
+
+    assert len(iv) == 32
+    self.absorb_index = 0
+    self.squeeze_index = 0
+    self.rate = self.state.R
+    self.capacity = self.state.N - self.state.R
+
+### Absorb
+
+    absorb(input)
+
+    Inputs:
+        self
+
+    Outputs:
+
+    Constants:
+        permutation,
+
+
+    self.squeeze_index = self.rate
+    if len(input) == 0:
+        return
+    if 0 <= self.absorb_index < self.rate:
+        self.state[self.absorb_index] = input[0]
+        self.absorb_index += 1
+        input = input[1:]
+        return self.absorb(input)
+    if self.absorb_index == self.rate:
+        self.state.permute()
+        self.absorb_index = 0
+        return self.absorb(input)
+
+### Squeeze
+
+    def squeeze(self, length: int):
+        self.absorb_index = self.rate
+
+        output = b''
+        if length == 0:
+            return output
+
+        if 0 <= self.squeeze_index < self.rate:
+            output += bytes(self.state[self.squeeze_index:self.squeeze_index+1])
+            self.squeeze_index += 1
+            length -= 1
+            return output + self.squeeze(length)
+
+        if self.squeeze_index == self.rate:
+            self.state.permute()
+            self.squeeze_index = 0
+            return output + self.squeeze(length)
+
+## Ciphersuites
+
+## Keccak f-1600
 
 ## SHAKE128 compatibility [WIP]
 
