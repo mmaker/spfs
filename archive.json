@@ -1,0 +1,372 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2025-03-18T01:11:48.421338+00:00",
+  "repo": "mmaker/spfs",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDONyiw_86rFQiu",
+      "title": "Add reference implementation, test vectors",
+      "url": "https://github.com/mmaker/spfs/issues/1",
+      "state": "CLOSED",
+      "author": "cathieyun",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "To facilitate adoption, it would be helpful to add a reference implementation, which produces test vectors. \nThe P384 ciphersuite as suggested in the spec would be sufficient for now.",
+      "createdAt": "2025-02-22T00:34:09Z",
+      "updatedAt": "2025-03-12T07:33:45Z",
+      "closedAt": "2025-03-12T07:33:45Z",
+      "comments": []
+    },
+    {
+      "number": 2,
+      "id": "I_kwDONyiw_86sOPU0",
+      "title": "Isolate `Scalar` structure from `Group` class",
+      "url": "https://github.com/mmaker/spfs/issues/2",
+      "state": "CLOSED",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Currently `Scalar` methods are inside `Group`, which does not allow for an appropriate Fiat-Shamir transform. There should be a separate `ScalarField` type attribute inside `Group`, performing the scalar operations. ",
+      "createdAt": "2025-03-02T08:43:45Z",
+      "updatedAt": "2025-03-12T20:14:17Z",
+      "closedAt": "2025-03-11T09:27:39Z",
+      "comments": [
+        {
+          "author": "cathieyun",
+          "authorAssociation": "COLLABORATOR",
+          "body": "A bit late to this thread, but why doesn't `Scalar` being inside `Group` allow for an appropriate F-S transform? What limitation do you run into when trying to do the F-S transform with `Group.random_scalar()` functions, for instance? I'm trying to better understand the reasoning here, and why it should be propagated back to ARC (https://github.com/mmaker/spfs/pull/6#issuecomment-2713323554).",
+          "createdAt": "2025-03-11T23:10:55Z",
+          "updatedAt": "2025-03-11T23:10:55Z"
+        },
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "The Fiat-Shamir transform should allow to squeeze field challenges using one single algorithm, regardless of wether it's the scalar field of an elliptic curve group or not. What I meant (apologies for the quickly-typed answer) is that I can access functions that concern`Scalar` only via `Group`. \n(I was thinking that some proofs, e.g. STARK proofs, have no elliptic curve involved and so no `Group` from which one can access methods concerning `Scalar`).\n\n\nHere's a cleaner argument: it would better match the specification if there was a `Scalar` class that exactly matches the `Scalar` requirements of the spec, right?  ",
+          "createdAt": "2025-03-11T23:42:26Z",
+          "updatedAt": "2025-03-12T00:00:09Z"
+        },
+        {
+          "author": "cathieyun",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ah the example of STARKs not having a Group to pull scalars from, is a good point and I hadn't thought of that. The current \"scalar from group\" is a shorthand (which may be sufficient for ARC, VOPRF, other EC-based protocols) but doesn't generalize too well.",
+          "createdAt": "2025-03-12T20:14:16Z",
+          "updatedAt": "2025-03-12T20:14:16Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDONyiw_86sQM3f",
+      "title": "Publish proof-of-concept implementation",
+      "url": "https://github.com/mmaker/spfs/issues/3",
+      "state": "CLOSED",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "An ideal proof-of-concept implementation should contain 3 examples: \n- DLEQ proofs\n- proofs of ElGamal encryption\n- Schnorr proof of knowledge of a secret key",
+      "createdAt": "2025-03-03T01:11:46Z",
+      "updatedAt": "2025-03-06T08:55:27Z",
+      "closedAt": "2025-03-06T08:55:27Z",
+      "comments": [
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "Done",
+          "createdAt": "2025-03-06T08:55:27Z",
+          "updatedAt": "2025-03-06T08:55:27Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "I_kwDONyiw_86sQNDO",
+      "title": "Create test vectors for implementation",
+      "url": "https://github.com/mmaker/spfs/issues/4",
+      "state": "CLOSED",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Create example test vectors for the examples in the implementation.",
+      "createdAt": "2025-03-03T01:12:37Z",
+      "updatedAt": "2025-03-12T07:33:35Z",
+      "closedAt": "2025-03-12T07:33:34Z",
+      "comments": [
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "closed by @cathieyun  in #11.",
+          "createdAt": "2025-03-12T07:33:34Z",
+          "updatedAt": "2025-03-12T07:33:34Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDONyiw_86sQNgc",
+      "title": "Isolate commitment serialization from prove_batchable",
+      "url": "https://github.com/mmaker/spfs/issues/5",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The method `prove_batchable` and `verify_batchable` should be agnostic wrt the sigma protocol and the choice of the hash function. \nIn order for this to happen, commitment and response serialization must be deferred to a separate procedure in SigmaProtocol.\nTherefore:  move serialization to `serialize_commitment` and `serialize_response`.",
+      "createdAt": "2025-03-03T01:14:39Z",
+      "updatedAt": "2025-03-03T01:14:39Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDONyiw_86snh1H",
+      "title": "Support for short proofs",
+      "url": "https://github.com/mmaker/spfs/issues/8",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Right now the non-interactive sigma protocol proving function outputs batchable proofs `(commitment, response)` \nwhich (I think) require point validation and are generally larger than short proofs of the form `(challenge, response)`.\n\nThis issue is to track the addition of a `short_prove` and `short_verify function`",
+      "createdAt": "2025-03-05T03:37:32Z",
+      "updatedAt": "2025-03-05T03:48:18Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 9,
+      "id": "I_kwDONyiw_86sniRo",
+      "title": "Support messages as part of the zk proof",
+      "url": "https://github.com/mmaker/spfs/issues/9",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "it is typical in signatures of knoweldge and sometimes in zk proofs to add a string label to a zkp, which is plugged into the fiat-shamir transformation. After a chat with trevor i have the impression that for him the way to go would be \n\n```\nchallenge = SHAKE128(description || message || commitment)\n```\n\nso i think we should find a way to add the message to the domain separator, if needed.",
+      "createdAt": "2025-03-05T03:39:17Z",
+      "updatedAt": "2025-03-05T03:39:17Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDONyiw_86snkVK",
+      "title": "Support deterministic nonce generation",
+      "url": "https://github.com/mmaker/spfs/issues/10",
+      "state": "OPEN",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "It is good practice in the signature world to re-seed the operating system randomness with the signing key. One such example is [RFC6979](https://datatracker.ietf.org/doc/html/rfc6979). This requires some care because (1) we want to preprocess the information with the challenge generation, (2) we don't want to expose the witness to side-channel attacks, and (3) make the spec more complicated than it needs to be. \n\nFor the case of sigma protocols, something simple as \n```\nnonce     = SHAKE128(description || message || random || PAD || witness)\nchallenge = SHAKE128(description || message || commitment)\n```\n\nwould be ideal, but the problem comes in when thinking of multi-round protocols, each of which might requires extra randomness in the middle of the protocol. \n\nThe approach used in [Nimue](https://github.com/mmaker/nimue) is to have the NARG prover state also hold a private sponge, which is ratcheted seeded with operating system randomness every time an absorb is performed. This seems OK but wasteful.\nA better alternative would be to expect the interactive (ZK) prover to take as input an rng, and seed that rng with the witness and some os randomness once and for all. The downside of this approach is that recovering the initial seed will break the whole protocol, but this does not seem to be such a problem? all in all, there is not much academic literature about leakage in zk proof of these sort.",
+      "createdAt": "2025-03-05T03:47:21Z",
+      "updatedAt": "2025-03-05T03:47:58Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 12,
+      "id": "I_kwDONyiw_86toHvn",
+      "title": "Keccak F-1600 does not work",
+      "url": "https://github.com/mmaker/spfs/issues/12",
+      "state": "CLOSED",
+      "author": "mmaker",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "\ud83d\udea8\ud83d\udea8\ud83d\udea8\ud83d\udea8 Currently we do not invoke the permutation function \ud83d\udea8\ud83d\udea8\ud83d\udea8\n\nhttps://github.com/mmaker/spfs/blob/main/poc/fiat_shamir.sage#L70\n\nThere seems to be a mismatch between python and sage bytewise operators that is leading to inconsistent results. This obviously is a major security issue and needs to be fixed.",
+      "createdAt": "2025-03-12T07:23:32Z",
+      "updatedAt": "2025-03-14T11:54:41Z",
+      "closedAt": "2025-03-14T11:54:41Z",
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 6,
+      "id": "PR_kwDONyiw_86NWhMS",
+      "title": "Isolate Scalar struct from Group",
+      "url": "https://github.com/mmaker/spfs/pull/6",
+      "state": "MERGED",
+      "author": "ChihChengLiang",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We attempt to fix #2 with this PR.\r\n\r\nTest\r\n```\r\ncd poc\r\nmake\r\nsage test_zkp.sage \r\n```\r\n\r\n",
+      "createdAt": "2025-03-04T17:44:23Z",
+      "updatedAt": "2025-03-11T09:27:38Z",
+      "baseRepository": "mmaker/spfs",
+      "baseRefName": "main",
+      "baseRefOid": "fe63fc453aec2fe652ff8fed42d9b96836875a5b",
+      "headRepository": "ChihChengLiang/spfs",
+      "headRefName": "scalar-struct",
+      "headRefOid": "4c5853633f81f9fbc232ada7074f1aa1a0c8b4c5",
+      "closedAt": "2025-03-11T09:27:38Z",
+      "mergedAt": "2025-03-11T09:27:38Z",
+      "mergedBy": "mmaker",
+      "mergeCommit": {
+        "oid": "e0f905e5304209282639a5c65f3d51a5e056fe99"
+      },
+      "comments": [
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "nice job, but there's still some things that are not handled: \r\n\r\n- `hash_to_scalar` is part of the description https://github.com/ChihChengLiang/spfs/blob/scalar-struct/poc/groups.sage#L190  \r\n- the change needs to propagate to the elliptic curve implementations\r\nIn particular, https://github.com/ChihChengLiang/spfs/blob/scalar-struct/poc/groups.sage#L246 scalar serialization for NIST curves is still part of `NISTGroup`. \r\nSame for https://github.com/ChihChengLiang/spfs/blob/scalar-struct/poc/groups.sage#L287. ",
+          "createdAt": "2025-03-05T09:59:01Z",
+          "updatedAt": "2025-03-05T09:59:01Z"
+        },
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "@cathieyun most changes here should propagate back to ARC, where \r\n1. the scalar interfaces are mixed with the group interfaces\r\n2. constants are mixed with runtime variables.",
+          "createdAt": "2025-03-11T09:27:32Z",
+          "updatedAt": "2025-03-11T09:27:32Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDONyiw_86ekViP",
+          "commit": {
+            "abbreviatedOid": "c5e69da"
+          },
+          "author": "ChihChengLiang",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "I commented on the decision to use composition (wrapping GF) rather than inheritance (subclass GF)",
+          "createdAt": "2025-03-05T08:30:21Z",
+          "updatedAt": "2025-03-05T08:32:12Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Eventually I gave up the inheritance approach due to the complexity.\r\nGF is not a simple class. It is created using a [UniqueFactory](https://doc.sagemath.org/html/en/reference//structure/sage/structure/factory.html#sage.structure.factory.UniqueFactory). To initialize it properly, we need __new__ instead of __init__, which causing a series of new complexity.\r\n\r\n\r\n",
+              "createdAt": "2025-03-05T08:30:21Z",
+              "updatedAt": "2025-03-05T08:32:12Z"
+            },
+            {
+              "originalPosition": 12,
+              "body": "We use the `__getattr__` to get all the GF properties and methods.",
+              "createdAt": "2025-03-05T08:30:49Z",
+              "updatedAt": "2025-03-05T08:32:12Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDONyiw_86NZM5A",
+      "title": "poc work (draft)",
+      "url": "https://github.com/mmaker/spfs/pull/7",
+      "state": "MERGED",
+      "author": "cathieyun",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-05T00:46:33Z",
+      "updatedAt": "2025-03-12T07:34:35Z",
+      "baseRepository": "mmaker/spfs",
+      "baseRefName": "main",
+      "baseRefOid": "250935630ea8f7e70366d786ef9a970fc902e3ea",
+      "headRepository": "mmaker/spfs",
+      "headRefName": "cathie/poc-fixups",
+      "headRefOid": "19f988cc5b0b1fa79fce3785c86273ac3c39e73a",
+      "closedAt": "2025-03-05T03:35:30Z",
+      "mergedAt": "2025-03-05T03:35:30Z",
+      "mergedBy": "mmaker",
+      "mergeCommit": {
+        "oid": "cb3328747b1325e326eff78b29dc02902767525a"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDONyiw_86Nr1ir",
+      "title": "Assemble proof test vectors (WIP)",
+      "url": "https://github.com/mmaker/spfs/pull/11",
+      "state": "MERGED",
+      "author": "cathieyun",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Changes:\r\n- Update `zkp_test` to add serialized proofs to a test vector dict\r\n- Write the test vectors to files (.json and .txt, though the .txt is currently ignored because of the .gitignore)\r\n- Update Makefile to reflect new workflows for `make test` and `make vectors`\r\n- Remove no-longer-relevant ARC files\r\n- Update contributors",
+      "createdAt": "2025-03-06T19:36:54Z",
+      "updatedAt": "2025-03-11T09:42:34Z",
+      "baseRepository": "mmaker/spfs",
+      "baseRefName": "main",
+      "baseRefOid": "e0f905e5304209282639a5c65f3d51a5e056fe99",
+      "headRepository": "mmaker/spfs",
+      "headRefName": "cathie/testvectors",
+      "headRefOid": "19c878ecabf6c1ef7b1a81263ab0073494c10a79",
+      "closedAt": "2025-03-11T09:42:34Z",
+      "mergedAt": "2025-03-11T09:42:34Z",
+      "mergedBy": "mmaker",
+      "mergeCommit": {
+        "oid": "8c6c1ef59e6f1425edeb6f40cc8a5df1c52a4dc5"
+      },
+      "comments": [
+        {
+          "author": "mmaker",
+          "authorAssociation": "OWNER",
+          "body": "Thank you so much Cathie! \r\nSome notes:  \r\n- The groups are instantiated at compile time, which seems useless and changes the API between what should be in the spec and what is in the POC. Ultimately, this will lead to confusion because of function signature mismatch. A better approach here I think would be to have a class factory and a ciphersuite dictionary that instantiates the ciphersuite for the sigma protocol.\r\n- I think the name \"ZKP\" is overly general and misleading, we should move everything into `sigma_protocols` or `SP`.\r\n- authorship on the Fiat--Shamir document is a bit of an over-reach (that part has not been touched, and even worse this PR introduced errors there).\r\n\r\n\r\nI am merging this PR because we need to move fast, but these parts  will have to be changed.",
+          "createdAt": "2025-03-11T07:22:16Z",
+          "updatedAt": "2025-03-11T09:42:27Z"
+        }
+      ],
+      "reviews": []
+    }
+  ]
+}
