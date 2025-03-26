@@ -1,17 +1,16 @@
 from abc import ABC, abstractmethod
-from collections import namedtuple
-from hash_to_field import I2OSP, OS2IP, expand_message_xmd, expand_message_xof, XMDExpander, hash_to_field
-
+from hash_to_field import OS2IP
+import struct
 from util import to_hex, to_bytes
 import hashlib
 from keccak import Keccak
 from sagelib.groups import GroupP384
 
-class DuplexSponge(ABC):
+class DuplexSpongeInterface(ABC):
     Unit = None
 
     @abstractmethod
-    def __init__(self, label: bytes):
+    def __init__(self, iv: bytes):
         raise NotImplementedError
 
     @abstractmethod
@@ -38,29 +37,13 @@ class KeccakPermutationState:
         self.state[i] = value
 
     def _keccak_state_to_bytes(self, state):
-        import struct
-        result = b''
-        for y in range(5):
-            for x in range(5):
-                result += struct.pack("<Q", state[x][y])
-        assert len(result) == 200
+        flattened_matrix = [val for row in state for val in row]
+        result = struct.pack('<25Q', *flattened_matrix)
         return bytearray(result)
 
     def _bytes_to_keccak_state(self, byte_array):
-        assert len(byte_array) == 200
-        state = [[0 for _ in range(5)] for _ in range(5)]
-        for y in range(5):
-            for x in range(5):
-                lane = 0
-                # Convert 8 bytes to a 64-bit lane (little-endian)
-                for i in range(8):
-                    # Calculate position in the input byte array
-                    pos = 8 * (5 * y + x) + i
-                    # Shift and OR the byte into the appropriate position in the 64-bit lane
-                    lane |= (byte_array[pos] & 0xFF) << (8 * i)
-                # Store the lane in the state array
-                state[x][y] = lane
-        return state
+        flat_state = list(struct.unpack('<25Q', byte_array))
+        return [flat_state[i:i+5] for i in range(0, 25, 5)]
 
     def permute(self):
         state = self._bytes_to_keccak_state(bytearray(self.state))
@@ -68,7 +51,7 @@ class KeccakPermutationState:
         self.state = self._keccak_state_to_bytes(new_state)
 
 
-class DuplexSponge:
+class DuplexSponge(DuplexSpongeInterface):
     state = None
 
     def __init__(self, iv: bytes):
@@ -113,6 +96,33 @@ class DuplexSponge:
             return output + self.squeeze(length)
 
 
+class Shake128(DuplexSpongeInterface):
+    state = KeccakPermutationState()
+
+    def __init__(self, iv: bytes):
+        assert(len(iv) == 32)
+        self.round = 0
+        self.iv = iv
+
+        self.h = self._new_oracle()
+
+
+    def _new_oracle(self):
+        h = hashlib.shake_128()
+        h.update(self.iv)
+        h.update(struct.pack('<Q', self.round))
+        return h
+
+    def absorb(self, input: bytes):
+        self.h.update(input)
+
+    def squeeze(self, length: int):
+        self.round += 1
+        verifier_message = self.h.digest(length)
+        self.h = self._new_oracle()
+        return verifier_message
+
+
 class ByteCodec:
     def absorb_bytes(self, bytes: bytes):
         return self.absorb(bytes)
@@ -140,7 +150,7 @@ class P384Codec:
         return self
 
 
-class DuplexSpongeKeccakP384(DuplexSponge, ByteCodec, P384Codec):
+class KeccakDuplexSpongeP384(DuplexSponge, ByteCodec, P384Codec):
     state = KeccakPermutationState()
     GG = GroupP384()
 
@@ -148,10 +158,20 @@ class DuplexSpongeKeccakP384(DuplexSponge, ByteCodec, P384Codec):
         iv = hashlib.sha256(label).digest()
         super().__init__(iv)
 
+
+class SHAKE128HashChainP384(Shake128, ByteCodec, P384Codec):
+    GG = GroupP384()
+
+    def __init__(self, label: bytes):
+        iv = hashlib.sha256(label).digest()
+        super().__init__(iv)
+
+
+
 if __name__ == "__main__":
     label = b"yellow submarine" * 2
-    sponge = DuplexSpongeKeccakP384(label)
-    scalar = DuplexSpongeKeccakP384.GG.ScalarField.field(42)
+    sponge = SHAKE128HashChainP384(label)
+    scalar = SHAKE128HashChainP384.GG.ScalarField.field(42)
     sponge.absorb_scalars([scalar])
     scalars = sponge.squeeze_scalars(1)
     print(scalars)

@@ -6,7 +6,6 @@ try:
     from sagelib.sigma_protocols import GroupMorphismPreimage, prove, verify
     from sagelib.test_drng import TestDRNG
     from util import to_hex, to_bytes
-    from sagelib.fiat_shamir import DuplexSpongeKeccakP384
     import json
 except ImportError as e:
     import sys
