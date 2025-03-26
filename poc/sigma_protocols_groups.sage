@@ -1,18 +1,18 @@
 from sagelib.groups import GroupP384
-from util import to_bytes
+import struct
 
 G = GroupP384()
 
-context_string = "ZKPV1-P384"
+context_string = b"ZKPV1-P384"
 
-def hash_to_group(x, info):
-    dst = to_bytes("HashToGroup-") + to_bytes(context_string) + info
+def hash_to_group(x, info: bytes):
+    dst = b"HashToGroup-" + context_string + info
     return G.hash_to_group(x, dst)
 
 def hash_to_scalar(x, info):
-    dst = to_bytes("HashToScalar-") + to_bytes(context_string) + info
+    dst = b"HashToScalar-" + context_string + info
     return G.hash_to_scalar(x, dst)
 
 GenG = G.generator()
-GenH = hash_to_group(G.serialize([GenG]), to_bytes("generatorH"))
-Gs = [hash_to_group(to_bytes("gen"), to_bytes(f"{i}")) for i in range(100)]
+GenH = hash_to_group(G.serialize([GenG]), b"generatorH")
+Gs = [hash_to_group(b"gen", struct.pack('<Q', i)) for i in range(100)]

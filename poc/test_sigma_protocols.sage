@@ -5,7 +5,6 @@ try:
     from sagelib.sigma_protocols_groups import G as group, Gs as generators, hash_to_group, context_string
     from sagelib.sigma_protocols import GroupMorphismPreimage, prove, verify
     from sagelib.test_drng import TestDRNG
-    from util import to_hex, to_bytes
     import json
 except ImportError as e:
     import sys
@@ -19,7 +18,7 @@ def wrap_write(fh, arg, *args):
             fh.write(hunk + "\n")
 
 def write_blob(fh, name, blob):
-    wrap_write(fh, name + ' = ' + to_hex(blob))
+    wrap_write(fh, name + ' = ' + blob.hex())
 
 def write_value(fh, name, value):
     wrap_write(fh, name + ' = ' + value)
@@ -48,12 +47,12 @@ def discrete_logarithm(vectors):
     statement.append_equation(X, [(var_x, G)])
 
     proof = prove(rng, b"test", statement, [x], group)
-    hex_proof = to_hex(proof)
+    hex_proof = proof.hex()
     print(f"discrete_logarithm proof: {hex_proof}\n")
     assert verify(b"test", statement, proof, group)
 
     vectors["discrete_logarithm"] = {
-        "Context": context_string,
+        "Context": context_string.hex(),
         "Statement": "TODO",
         "Proof": hex_proof,
     }
@@ -78,12 +77,12 @@ def dleq(vectors):
     statement.append_equation(Y, [(var_x, H)])
 
     proof = prove(rng, b"test", statement, [x], group)
-    hex_proof = to_hex(proof)
+    hex_proof = proof.hex()
     print(f"dleq proof: {hex_proof}\n")
     assert verify(b"test", statement, proof, group)
 
     vectors["dleq"] = {
-        "Context": context_string,
+        "Context": context_string.hex(),
         "Statement": "TODO",
         "Proof": hex_proof,
     }
@@ -106,12 +105,12 @@ def pedersen_commitment(vectors):
     statement.append_equation(C, [(var_x, G), (var_r, H)])
 
     proof = prove(rng, b"test", statement, [x, r], group)
-    hex_proof = to_hex(proof)
+    hex_proof = proof.hex()
     print(f"pedersen_commitment proof: {hex_proof}\n")
     assert verify(b"test", statement, proof, group)
 
     vectors["pedersen_commitment"] = {
-        "Context": context_string,
+        "Context": context_string.hex(),
         "Statement": "TODO",
         "Proof": hex_proof,
     }
@@ -122,7 +121,7 @@ def pedersen_commitment_dleq(vectors):
 
         PEDERSEN(G0, G1, G2, G3, X, Y) = PoK{(x0, x1):  X = x0 * G0  + x1 * G1, Y = x0 * G2 + x1 * G3}
     """
-    Gs = [hash_to_group(to_bytes("gen"), to_bytes(f"{i}")) for i in range(100)]
+    from sagelib.sigma_protocols_groups import Gs
 
     rng = TestDRNG("test vector seed".encode('utf-8'))
 
@@ -137,12 +136,12 @@ def pedersen_commitment_dleq(vectors):
 
     # Test batched proof
     proof = prove(rng, b"test", statement, witness, group)
-    hex_proof = to_hex(proof)
+    hex_proof = proof.hex()
     print(f"pedersen_commitment_dleq proof: {hex_proof}\n")
     assert verify(b"test", statement, proof, group)
 
     vectors["pedersen_commitment_dleq"] = {
-        "Context": context_string,
+        "Context": context_string.hex(),
         "Statement": "TODO",
         "Proof": hex_proof,
     }

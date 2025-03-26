@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from hash_to_field import OS2IP
 import struct
-from util import to_hex, to_bytes
 import hashlib
 from keccak import Keccak
 from sagelib.groups import GroupP384
