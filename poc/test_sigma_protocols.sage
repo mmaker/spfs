@@ -2,7 +2,7 @@
 # vim: syntax=python
 
 try:
-    from sagelib.sigma_protocols_groups import G as group, Gs as generators, hash_to_group, context_string
+    from sagelib.sigma_protocols_groups import G as group, Gs as generators, context_string
     from sagelib.sigma_protocols import GroupMorphismPreimage, prove, verify
     from sagelib.test_drng import TestDRNG
     import json

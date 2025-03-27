@@ -21,7 +21,7 @@ def verify(label, statement, proof, group):
     return sp.verifier(commitment, challenge, response)
 
 
-# the combiner for arbitrary statements
+# Combiner for arbitrary statements
 class SigmaProtocol(ABC):
     @abstractmethod
     def __init__(self, statement):
