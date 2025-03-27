@@ -3,8 +3,9 @@ from collections import namedtuple
 
 from sagelib.fiat_shamir import SHAKE128HashChainP384
 
-def prove(rng, label, statement, witness, group):
-    sp = SchnorrProof(statement, group)
+
+def prove(rng, label, statement, witness):
+    sp = SchnorrProof(statement)
     (prover_state, commitment) = sp.prover_commit(rng, witness)
     # challenge, = SHAKE128HashChainP384(label).absorb_elements(commitment).squeeze_scalars(1)
     challenge = 42
@@ -13,8 +14,8 @@ def prove(rng, label, statement, witness, group):
     assert sp.verifier(commitment, challenge, response)
     return sp.serialize_batchable(commitment, challenge, response)
 
-def verify(label, statement, proof, group):
-    sp = SchnorrProof(statement, group)
+def verify(label, statement, proof):
+    sp = SchnorrProof(statement)
     commitment, response = sp.deserialize_batchable(proof)
     # challenge, = SHAKE128HashChainP384(label).absorb_elements(commitment).squeeze_scalars(1)
     challenge = 42
@@ -23,6 +24,11 @@ def verify(label, statement, proof, group):
 
 # Combiner for arbitrary statements
 class SigmaProtocol(ABC):
+    """
+    This is the abstract API of a Sigma protocol.
+
+    An (interactive) Sigma protocol is a 3-message protocol that is special sound and hvzk.
+    """
     @abstractmethod
     def __init__(self, statement):
         raise NotImplementedError
@@ -81,6 +87,8 @@ class GroupMorphismPreimage:
         self.morphism = Morphism(group)
         self.image = []
         self.group = group
+        self.Domain = group.ScalarField
+        self.Image = group
 
     @property
     def commit_bytes_len(self):
@@ -102,12 +110,14 @@ class GroupMorphismPreimage:
 
 
 class SchnorrProof(SigmaProtocol):
-    def __init__(self, statement, group):
+    def __init__(self, statement):
         self.statement = statement
-        self.group = group
 
     def prover_commit(self, rng, witness):
-        nonces = [self.group.ScalarField.random(rng) for _ in range(self.statement.morphism.num_scalars)]
+        nonces = [
+            self.statement.Domain.random(rng)
+            for _ in range(self.statement.morphism.num_scalars)
+        ]
         prover_state = ProverState(witness, nonces)
         commitment = self.statement.morphism(nonces)
         return (prover_state, commitment)
@@ -135,15 +145,15 @@ class SchnorrProof(SigmaProtocol):
 
     def serialize_batchable(self, commitment, challenge, response):
         return (
-            self.group.serialize(commitment) +
-            self.group.ScalarField.serialize(response)
+            self.statement.Image.serialize(commitment) +
+            self.statement.Domain.serialize(response)
         )
 
     def deserialize_batchable(self, encoded):
         commitment_bytes = encoded[: self.statement.commit_bytes_len]
-        commitment = self.group.deserialize(commitment_bytes)
+        commitment = self.statement.Image.deserialize(commitment_bytes)
 
         response_bytes = encoded[self.statement.commit_bytes_len :]
-        response = self.group.ScalarField.deserialize(response_bytes)
+        response = self.statement.Domain.deserialize(response_bytes)
 
         return (commitment, response)
