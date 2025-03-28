@@ -11,7 +11,26 @@ except ImportError as e:
 
 context_string = b'sigma_protocols'
 from sagelib.groups import GroupP384 as group
+from functools import wraps
 
+def test_vector(test_vector_function):
+    def inner(vectors):
+        rng = TestDRNG("test vector seed".encode('utf-8'))
+        test_vector_name = test_vector_function.__name__
+
+        statement, witness = test_vector_function(rng)
+        narg_string = prove(rng, b"name", statement, witness)
+        assert verify(b"test", statement, narg_string)
+        hex_narg_string = narg_string.hex()
+        print(f"{test_vector_name} narg_string: {hex_narg_string}\n")
+
+        vectors[test_vector_name] = {
+            "Context": context_string.hex(),
+            "Statement": "TODO",
+            "Proof": hex_narg_string,
+        }
+
+    return inner
 
 def wrap_write(fh, arg, *args):
     line_length = 68
@@ -33,41 +52,32 @@ def write_group_vectors(fh, label, vector):
         write_value(fh, key, vector[key])
     fh.write("~~~\n\n")
 
-def discrete_logarithm(vectors):
+@test_vector
+def discrete_logarithm(rng):
     """
     Proves the following statement:
 
         DL(X) = PoK{(x): X = x * G}
 
     """
-    rng = TestDRNG("test vector seed".encode('utf-8'))
-    G = group.generator()
     x = group.ScalarField.random(rng)
+    G = group.generator()
     X = G * x
 
     statement = GroupMorphismPreimage(group)
     [var_x] = statement.allocate_scalars(1)
     statement.append_equation(X, [(var_x, G)])
 
-    proof = prove(rng, b"test", statement, [x])
-    hex_proof = proof.hex()
-    print(f"discrete_logarithm proof: {hex_proof}\n")
-    assert verify(b"test", statement, proof)
+    return statement, [x]
 
-    vectors["discrete_logarithm"] = {
-        "Context": context_string.hex(),
-        "Statement": "TODO",
-        "Proof": hex_proof,
-    }
-
-def dleq(vectors):
+@test_vector
+def dleq(rng):
     """
     Proves the following statement:
 
         DLEQ(G, H, X, Y) = PoK{(x): X = x * G, Y = x * H}
 
     """
-    rng = TestDRNG("test vector seed".encode('utf-8'))
     G = group.generator()
     H = group.random(rng)
     x = group.ScalarField.random(rng)
@@ -79,55 +89,40 @@ def dleq(vectors):
     statement.append_equation(X, [(var_x, G)])
     statement.append_equation(Y, [(var_x, H)])
 
-    proof = prove(rng, b"test", statement, [x])
-    hex_proof = proof.hex()
-    print(f"dleq proof: {hex_proof}\n")
-    assert verify(b"test", statement, proof)
+    return statement, [x]
 
-    vectors["dleq"] = {
-        "Context": context_string.hex(),
-        "Statement": "TODO",
-        "Proof": hex_proof,
-    }
-
-def pedersen_commitment(vectors):
+@test_vector
+def pedersen_commitment(rng):
     """
     Proves the following statement:
 
         PEDERSEN(G, H, C) = PoK{(x, r): C = x * G + r * H}
     """
-    rng = TestDRNG("test vector seed".encode('utf-8'))
     G = group.generator()
     H = group.random(rng)
     x = group.ScalarField.random(rng)
     r = group.ScalarField.random(rng)
+    witness = [x, r]
 
     C = G * x + H * r
     statement = GroupMorphismPreimage(group)
     var_x, var_r = statement.allocate_scalars(2)
     statement.append_equation(C, [(var_x, G), (var_r, H)])
+    return statement, witness
 
-    proof = prove(rng, b"test", statement, [x, r])
-    hex_proof = proof.hex()
-    print(f"pedersen_commitment proof: {hex_proof}\n")
-    assert verify(b"test", statement, proof)
-
-    vectors["pedersen_commitment"] = {
-        "Context": context_string.hex(),
-        "Statement": "TODO",
-        "Proof": hex_proof,
-    }
-
-def pedersen_commitment_dleq(vectors):
+@test_vector
+def pedersen_commitment_dleq(rng):
     """
     Proves the following statement:
 
-        PEDERSEN(G0, G1, G2, G3, X, Y) = PoK{(x0, x1):  X = x0 * G0  + x1 * G1, Y = x0 * G2 + x1 * G3}
+        PEDERSEN(G0, G1, G2, G3, X, Y) =
+            PoK{
+              (x0, x1):
+                X = x0 * G0  + x1 * G1,
+                Y = x0 * G2 + x1 * G3
+            }
     """
-    generators = [group.random(TestDRNG("test vector seed".encode('utf-8'))) for i in range(4)]
-
-    rng = TestDRNG("test vector seed".encode('utf-8'))
-
+    generators = [group.random(rng) for i in range(4)]
     witness = [group.ScalarField.random(rng) for i in range(2)]
     X = group.msm(witness, generators[:2])
     Y = group.msm(witness, generators[2:4])
@@ -136,25 +131,54 @@ def pedersen_commitment_dleq(vectors):
     [var_x, var_r] = statement.allocate_scalars(2)
     statement.append_equation(X, [(var_x, generators[0]), (var_r, generators[1])])
     statement.append_equation(Y, [(var_x, generators[2]), (var_r, generators[3])])
+    return statement, witness
 
-    # Test batched proof
-    proof = prove(rng, b"test", statement, witness)
-    hex_proof = proof.hex()
-    print(f"pedersen_commitment_dleq proof: {hex_proof}\n")
-    assert verify(b"test", statement, proof)
 
-    vectors["pedersen_commitment_dleq"] = {
-        "Context": context_string.hex(),
-        "Statement": "TODO",
-        "Proof": hex_proof,
-    }
+@test_vector
+def bss_blind_commitment_computation(rng):
+    """
+    This example test vector is meant to replace:
+    https://www.ietf.org/archive/id/draft-kalos-bbs-blind-signatures-01.html#section-4.1.1
+
+    Proves the following statement:
+        PoK{
+        (secret_prover_blind, msg_1, ..., msg_M):
+            C = secret_prover_blind * Q_2 + msg_1 * J_1 + ... + msg_M * J_M
+        }
+    """
+    # length(committed_messages)
+    M = 3
+    # BBS.create_generators(M + 1, "BLIND_" || api_id)
+    (Q_2, J_1, J_2, J_3) = generators =  [group.random(rng) for i in range(M+1)]
+    # BBS.messages_to_scalars(committed_messages,  api_id)
+    (msg_1, msg_2, msg_3) =  [group.ScalarField.random(rng) for i in range(M)]
+
+    ## these are computed before the proof in the specification
+    secret_prover_blind = group.ScalarField.random(rng)
+    C = secret_prover_blind * Q_2 + msg_1 * J_1 + msg_2 * J_2 + msg_3 * J_3
+
+    ## This is the part that needs to be changed in the specification of blind bbs.
+    statement = GroupMorphismPreimage(group)
+    [var_secret_prover_blind, var_msg_1, var_msg_2, var_msg_3] = statement.allocate_scalars(M+1)
+    statement.append_equation(
+        C, [(var_secret_prover_blind, Q_2), (var_msg_1, J_1), (var_msg_2, J_2), (var_msg_3, J_3)]
+    )
+    witness = [secret_prover_blind, msg_1, msg_2, msg_3]
+    return statement, witness
+
+
 
 def main(path="vectors"):
     vectors = {}
-    discrete_logarithm(vectors)
-    dleq(vectors)
-    pedersen_commitment(vectors)
-    pedersen_commitment_dleq(vectors)
+    test_vectors = [
+        discrete_logarithm,
+        dleq,
+        pedersen_commitment,
+        pedersen_commitment_dleq,
+        bss_blind_commitment_computation,
+    ]
+    for test_vector in test_vectors:
+        test_vector(vectors)
 
     with open(path + "/allVectors.json", 'wt') as f:
         json.dump(vectors, f, sort_keys=True, indent=2)
